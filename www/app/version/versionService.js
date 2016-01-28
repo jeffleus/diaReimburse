@@ -8,7 +8,7 @@ angular.module('starter.services')
     function _init() {
         document.addEventListener("deviceready", function () {
             $cordovaAppVersion.getVersionNumber().then(function (version) {
-                var self.version = version;
+                self.version = version;
             }).catch(function(error) {
                 console.log('VersionSvc::_init - ' + error);
             });

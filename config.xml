@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="edu.ucla.athletics.reimburse" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="edu.ucla.athletics.reimburse" version="0.1.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>DIA Reimburse</name>
   <description>
         A Reimbursement Utility for UCLA Athletics.
     </description>
-  <author email="jeffl@em.ucla.edu" href="http://dia.athletics.ucla.edu/">
+  <author email="jeffl@ad.ucla.edu" href="http://dia.athletics.ucla.edu/">
       Ionic Framework Team
     </author>
   <content src="index.html"/>
