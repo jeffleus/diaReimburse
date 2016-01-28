@@ -1,6 +1,7 @@
 angular.module('starter.controllers', ['ngCookies', 'ionic-timepicker'])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, $http, $cookies) {
+.controller('AppCtrl', function($scope, VersionSvc, $ionicModal, $timeout, $http, $cookies) {
+    $scope.versionSvc = VersionSvc;
 //.controller('AppCtrl', function($scope, $ionicModal, $timeout, $http, TokenSvc, $cookies) {
 //  // Form data for the login modal
 //  $scope.loginData = { username:'admin@example.com', password:'Admin@123456' };
