@@ -1,0 +1,38 @@
+<ion-view view-title="Settings">
+  <ion-content class="padding">
+
+    <ion-list>
+        <ion-item class="item-divider">Traveler Defaults</ion-item>
+        <ion-item class="item-input">
+            <span class="input-label">FirstName</span>
+            <input type="text" ng-model="settingsSvc.firstName">
+        </ion-item>
+        <ion-item class="item-input">
+            <span class="input-label">LastName</span>
+            <input type="text" ng-model="settingsSvc.lastName">
+        </ion-item>
+        <ion-item class="item-input">
+            <span class="input-label">Department</span>
+            <input type="text" ng-model="settingsSvc.department">
+        </ion-item>
+        <ion-item class="item-input">
+            <span class="input-label">Email</span>
+            <input type="text" ng-model="settingsSvc.email">
+        </ion-item>
+        <ion-item class="item-input">
+            <span class="input-label">HomeCity</span>
+            <input type="text" ng-model="settingsSvc.homeCity">
+        </ion-item>
+        <ion-item class="item-divider">Trip Defaults</ion-item>
+        <ion-item class="item-input">
+            <span class="input-label">Title</span>
+            <input type="text" ng-model="settingsSvc.defaultTitle">
+        </ion-item>
+        <ion-item class="item-input">
+            <span class="input-label">Purpose</span>
+            <input type="text" ng-model="settingsSvc.defaultPurpose">
+        </ion-item>
+    </ion-list>
+
+    </ion-content>
+</ion-view>

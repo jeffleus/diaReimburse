@@ -1,0 +1,18 @@
+<ion-view title="Trip-Receipts">
+	<ion-content class="has-header">
+        <h3>Receipts</h3>
+        <ion-list can-swipe="true">
+            <ion-item class="item-thumbnail-left" ng-repeat="r in tripSvc.currentTrip.receipts"
+                      ng-click="selectImage(r)">
+                <img ng-src="{{r.image}}">
+                <h2>{{r.title}}</h2>
+                <p>{{r.description}}</p>
+                <ion-option-button class="button-assertive"
+                                   ng-click="deleteReceipt(r)">
+                  Delete
+                </ion-option-button>
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-view>
+<a href="#" class="btn-add-expense" ng-click="addReceiptSheet()"><i class="ion-plus-circled"></i></a>
