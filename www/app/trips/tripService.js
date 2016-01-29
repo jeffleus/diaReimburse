@@ -1,11 +1,13 @@
 angular.module('starter.services')
 
-.service('TripSvc', function() {
+.service('TripSvc', function(Trip) {
     var self = this;    
     self.trips = [];
     self.currentTrip = {};
     self.addTrip = _addTrip;
     self.deleteTrip = _deleteTrip;
+    self.resume = _resume;
+    self.pause = _pause;
     
     function _addTrip(t) {
         console.log('TripSvc::addTrip - ' + t.title);
@@ -21,6 +23,32 @@ angular.module('starter.services')
         } else {
             console.log('trip not found in tripSvc');
         }
+    }
+    
+    function _resume() {
+        if (localStorage['trips']) {
+            //parse the localStorage for trips and then extend the current service to overwrite data
+            var serviceData = JSON.parse(localStorage['trips']);
+            //angular.extend(self, settings);
+            _hydrate(serviceData);
+        }
+    }
+    
+    function _hydrate(data) {
+        if (data.trips) {
+            self.trips.length = 0;
+            data.trips.forEach(function(tripData) {
+                var trip = new Trip(tripData.title);
+                angular.extend(trip, tripData);
+                _addTrip(trip);
+            })
+        }
+    }
+    
+    function _pause() {
+        //stringify and stuff in localStorage
+        var settings = JSON.stringify(self);
+        localStorage['trips'] = settings;
     }
     
     return self;

@@ -6,7 +6,7 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'ngCordova', 'starter.services', 'starter.controllers'])
 
-.run(function($ionicPlatform, SettingsSvc) {
+.run(function($ionicPlatform, SettingsSvc, TripSvc) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -18,6 +18,7 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.services', 'starter.co
           StatusBar.styleDefault();
         }
         SettingsSvc.resume();
+        TripSvc.resume();
     });
     //handle Cordova resume (enter foreground) and pause (enter background events)
     $ionicPlatform.on('resume', function(event) {
@@ -25,11 +26,13 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.services', 'starter.co
 //        var settings = JSON.parse(localStorage['settings']);
 //        console.log(settings.lastSaved);
         SettingsSvc.resume();
+        TripSvc.resume();
     });
 
     $ionicPlatform.on('pause', function(event) {
         //Do something here on entering background
         SettingsSvc.pause();
+        TripSvc.pause();
 //        localStorage['settings'] = JSON.stringify(SettingsSvc);
         //console.log('PAUSE');
     });
