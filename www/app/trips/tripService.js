@@ -38,8 +38,9 @@ angular.module('starter.services')
         if (data.trips) {
             self.trips.length = 0;
             data.trips.forEach(function(tripData) {
-                var trip = new Trip(tripData.title);
-                angular.extend(trip, tripData);
+//                var trip = new Trip(tripData.title);
+                var trip = new Trip(tripData);
+//                angular.extend(trip, tripData);
                 _addTrip(trip);
             })
         }
@@ -55,9 +56,11 @@ angular.module('starter.services')
 })
 
 .factory('Trip', function() {
-    var Trip = function(title) {
+    var Trip = function(data) {
+        var isDataObject = (typeof data === "object") && (data !== null);
+        
         this.id = -1;
-        this.title = title;
+        this.title = (!!data && !isDataObject)?data:"";
         this.purpose = "";
         
         this.traveler = "";
@@ -72,6 +75,10 @@ angular.module('starter.services')
         this.receipts = [];
         this.notes = [];
         this.isSubmitted = false;
+        
+        if (data && isDataObject) {
+            angular.extend(this, data);
+        }
     }
     Trip.prototype.addExpense = _addExpense;
     Trip.prototype.deleteExpense = _deleteExpense;
