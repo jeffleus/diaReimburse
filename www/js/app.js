@@ -6,18 +6,33 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'ngCordova', 'starter.services', 'starter.controllers'])
 
-.run(function($ionicPlatform) {
-  $ionicPlatform.ready(function() {
-    // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-    // for form inputs)
-    if (window.cordova && window.cordova.plugins.Keyboard) {
-      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false);
-    }
-    if (window.StatusBar) {
-      // org.apache.cordova.statusbar required
-      StatusBar.styleDefault();
-    }
-  });
+.run(function($ionicPlatform, SettingsSvc) {
+    $ionicPlatform.ready(function() {
+        // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+        // for form inputs)
+        if (window.cordova && window.cordova.plugins.Keyboard) {
+          cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false);
+        }
+        if (window.StatusBar) {
+          // org.apache.cordova.statusbar required
+          StatusBar.styleDefault();
+        }
+        SettingsSvc.resume();
+    });
+    //handle Cordova resume (enter foreground) and pause (enter background events)
+    $ionicPlatform.on('resume', function(event) {
+//        console.log('RESUME: ' + moment().format('HH:mm:ss'))
+//        var settings = JSON.parse(localStorage['settings']);
+//        console.log(settings.lastSaved);
+        SettingsSvc.resume();
+    });
+
+    $ionicPlatform.on('pause', function(event) {
+        //Do something here on entering background
+        SettingsSvc.pause();
+//        localStorage['settings'] = JSON.stringify(SettingsSvc);
+        //console.log('PAUSE');
+    });
 })
 
 .constant('ServiceRoot', function() { return 'http://reimburse.athletics.ucla.edu/'; })
