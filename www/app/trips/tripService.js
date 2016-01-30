@@ -11,7 +11,7 @@ angular.module('starter.services')
     
     function _addTrip(t) {
         console.log('TripSvc::addTrip - ' + t.title);
-        t.id = self.trips.length;
+        if (t.id == -1) t.id = self.trips.length;
         self.trips.push(t);
     }
     
@@ -35,12 +35,14 @@ angular.module('starter.services')
     }
     
     function _hydrate(data) {
+        //check for an array of trips in the json data provided
         if (data.trips) {
+            //reset the internal array of trips in the service, then loop each trip
             self.trips.length = 0;
             data.trips.forEach(function(tripData) {
-//                var trip = new Trip(tripData.title);
+                //pass the trip JSON to the constrcutor of the Trip class
                 var trip = new Trip(tripData);
-//                angular.extend(trip, tripData);
+                //and add the trip to the collection in the service
                 _addTrip(trip);
             })
         }
@@ -55,18 +57,20 @@ angular.module('starter.services')
     return self;
 })
 
-.factory('Trip', function() {
+.factory('Trip', function(AirfareExp) {
     var Trip = function(data) {
+        var self = this;
+        //check the data param to check for a JSON object
         var isDataObject = (typeof data === "object") && (data !== null);
         
         this.id = -1;
+        //if data is not JSON, it is the string for the title
         this.title = (!!data && !isDataObject)?data:"";
         this.purpose = "";
         
         this.traveler = "";
         this.travelerEmail = "";
         this.travelerDepartment = "";
-//        this.destinations = [];
         this.desinations = "";
         this.homeCity = "";
         this.vehicleUsed = "";
@@ -75,9 +79,18 @@ angular.module('starter.services')
         this.receipts = [];
         this.notes = [];
         this.isSubmitted = false;
-        
+        //if data is JSON, then use extend to copy in all the values
         if (data && isDataObject) {
-            angular.extend(this, data);
+            //this needs to be improved to do a deeper copy so expenses are objects w/ class methods
+            angular.extend(self, data);
+            if (data.expenses && data.expenses.length > 0) {
+                var expenses = data.expenses;
+                self.expenses = [];
+                expenses.forEach(function(expenseData) {
+                    var airfare = new AirfareExp(expenseData);
+                    self.addExpense(airfare);
+                })
+            }
         }
     }
     Trip.prototype.addExpense = _addExpense;

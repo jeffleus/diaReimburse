@@ -37,7 +37,8 @@ angular.module('starter.services')
 })
 
 .factory('AirfareExp', function() {
-    var Airfare = function() {
+    var Airfare = function(data) {
+        var self = this;
         this.expenseCategory = "Airfare";
         this.date = "";
         this.airline = "";
@@ -45,6 +46,15 @@ angular.module('starter.services')
         this.arrive = "";
         this.destinations = "";
         this.amount = "";
+        if (data) {
+            // rehydrate with functions on prototype
+            for (var prop in data) {
+                if (Object.prototype.hasOwnProperty.call(data, prop)) {
+                    self[prop] = data[prop];
+                }
+            }
+//            angular.extend(this, data);
+        }
     }
     
     Airfare.prototype.info = function() {
