@@ -21,20 +21,11 @@ angular.module('starter.services')
 })
 
 .factory('MiscExp', function() {
-    var MiscExp = function(data) {
+    var MiscExp = function() {
         this.expenseCategory = "Misc";
         this.date = "";
         this.description = "";
         this.amount = "";
-        if (data) {
-            //text attributes from the JSON data
-            self.expenseCategory = data['expenseCategory'];
-            self.description = data['description'];
-            //numeric attributes from the JSON data
-            self.amount = data['amount'];
-            //date attributes hydrated as dates from JSON using moment
-            self.date = moment(data['date']).toDate();
-        }
     }
     
     MiscExp.prototype.info = function() {
