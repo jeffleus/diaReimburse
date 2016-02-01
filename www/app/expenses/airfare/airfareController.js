@@ -1,6 +1,6 @@
 angular.module('starter.controllers')
 
-.controller('AirfareCtrl', function($scope, AirfareExp, AirfareSvc, TripSvc) {
+.controller('AirfareCtrl', function($scope, AirfareExp, TripSvc) {
     
     console.log('Airfare Controller...');
 //    $scope.newAirfare = new AirfareExp();
