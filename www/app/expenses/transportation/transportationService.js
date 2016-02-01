@@ -1,7 +1,7 @@
 angular.module('starter.services')
 
 .factory('TransportationExp', function() {
-    var TransportationExp = function() {
+    var TransportationExp = function(data) {
         this.expenseCategory = "Transportation";
         this.date = new Date();
         this.company = "";
