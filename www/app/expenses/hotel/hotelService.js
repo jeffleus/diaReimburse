@@ -2,34 +2,23 @@ angular.module('starter.services')
 
 .service('HotelSvc', function(AirfareExp) {
     var self = this;
-    self.airExpenses = [];
+    self.hotelExpenses = [];
     
-    self.addAirfare = _addAirfare;
-    self.deleteAirfare = _deleteAirfare;
-    _init();
+    self.addHotel = _addHotel;
+    self.deleteHotel = _deleteHotel;
     
-    function _init() {
-        var initExp = new AirfareExp();
-        initExp.date = new Date('2011-04-11');
-        initExp.airline = "United Airlines";
-        initExp.amount = "$453.21";
-        initExp.destinations = "CHI";
-        
-        _addAirfare(initExp);
+    function _addHotel(e) {
+        console.log('HotelSvc::addHotel - ' + e.date + e.hotelName);
+        self.hotelExpenses.push(e);
     }
     
-    function _addAirfare(e) {
-        console.log('AirfareSvc::addTrip - ' + e.date + e.airline);
-        self.airExpenses.push(e);
-    }
-    
-    function _deleteAirfare(e) {
-        console.log('AirfareSvc::deleteTrip - ' + e.date + e.airline);
-        var index = self.airExpenses.indexOf(e);
+    function _deleteHotel(e) {
+        console.log('HotelSvc::deleteHotel - ' + e.date + e.hotelName);
+        var index = self.hotelExpenses.indexOf(e);
         if (index >-1) {
-            self.airExpenses.splice(index,1);
+            self.hotelExpenses.splice(index,1);
         } else {
-            console.log('trip not found in tripSvc');
+            console.log('hotel not found in tripSvc');
         }
     }
 
@@ -37,12 +26,23 @@ angular.module('starter.services')
 })
 
 .factory('HotelExp', function() {
-    var HotelExp = function() {
+    var HotelExp = function(data) {
+        var self = this;
         this.expenseCategory = "Hotel";
         this.date = "";
         this.hotelName = "";
         this.amount = "";
         this.notes = "";
+        if (data) {
+            //text attributes from the JSON data
+            self.expenseCategory = data['expenseCategory'];
+            self.hotelName = data['hotelName'];
+            self.notes = data['notes'];            
+            //numeric attributes from the JSON data
+            self.amount = data['amount'];
+            //date attributes hydrated as dates from JSON using moment
+            self.date = moment(data['date']).toDate();
+        }
     }
     
     HotelExp.prototype.info = function() {

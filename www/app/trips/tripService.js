@@ -57,7 +57,7 @@ angular.module('starter.services')
     return self;
 })
 
-.factory('Trip', function(AirfareExp) {
+.factory('Trip', function(AirfareExp, HotelExp) {
     var Trip = function(data) {
         var self = this;
         //check the data param to check for a JSON object
@@ -87,8 +87,13 @@ angular.module('starter.services')
                 var expenses = data.expenses;
                 self.expenses = [];
                 expenses.forEach(function(expenseData) {
-                    var airfare = new AirfareExp(expenseData);
-                    self.addExpense(airfare);
+                    if (expenseData['expenseCategory'] === 'Airfare') {
+                        var expense = new AirfareExp(expenseData);
+                    }
+                    else if(expenseData['expenseCategory'] === 'Hotel') {
+                        var expense = new HotelExp(expenseData);                        
+                    }
+                    self.addExpense(expense);
                 })
             }
         }
