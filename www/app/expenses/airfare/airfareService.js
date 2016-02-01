@@ -47,12 +47,16 @@ angular.module('starter.services')
         this.destinations = "";
         this.amount = "";
         if (data) {
-            // rehydrate with functions on prototype
-            for (var prop in data) {
-                if (Object.prototype.hasOwnProperty.call(data, prop)) {
-                    self[prop] = data[prop];
-                }
-            }
+            //text attributes from the JSON data
+            self.expenseCategory = data['expenseCategory'];
+            self.airline = data['airline'];
+            self.destinations = data['destinations'];            
+            //numeric attributes from the JSON data
+            self.amount = data['amount'];
+            //date attributes hydrated as dates from JSON using moment
+            self.date = moment(data['date']).toDate();
+            self.arrive = moment(data['arrive']).toDate();
+            self.depart = moment(data['depart']).toDate();
 //            angular.extend(this, data);
         }
     }
