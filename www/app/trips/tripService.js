@@ -50,14 +50,14 @@ angular.module('starter.services')
     
     function _pause() {
         //stringify and stuff in localStorage
-        var settings = JSON.stringify(self);
-        localStorage['trips'] = settings;
+        var trips = JSON.stringify(self);
+        localStorage['trips'] = trips;
     }
     
     return self;
 })
 
-.factory('Trip', function(AirfareExp, HotelExp) {
+.factory('Trip', function(AirfareExp, HotelExp, TransportationExp, MiscExp) {
     var Trip = function(data) {
         var self = this;
         //check the data param to check for a JSON object
@@ -92,6 +92,12 @@ angular.module('starter.services')
                     }
                     else if(expenseData['expenseCategory'] === 'Hotel') {
                         var expense = new HotelExp(expenseData);                        
+                    }
+                    else if(expenseData['expenseCategory'] === 'Transportation') {
+                        var expense = new TransportationExp(expenseData);                        
+                    }
+                    else if(expenseData['expenseCategory'] === 'Misc') {
+                        var expense = new MiscExp(expenseData);                        
                     }
                     self.addExpense(expense);
                 })
