@@ -57,7 +57,7 @@ angular.module('starter.services')
     return self;
 })
 
-.factory('Trip', function(AirfareExp, HotelExp, TransportationExp, MileageExp, MealExp) {
+.factory('Trip', function(AirfareExp, HotelExp, TransportationExp, MileageExp, MealExp, MiscExp, TravelDate) {
     var Trip = function(data) {
         var self = this;
         //check the data param to check for a JSON object
@@ -115,7 +115,18 @@ angular.module('starter.services')
                     else if(expenseData['expenseCategory'] === 'Meal') {
                         var expense = new MealExp(expenseData);                        
                     }
+                    else if(expenseData['expenseCategory'] === 'Misc') {
+                        var expense = new MiscExp(expenseData);                        
+                    }
                     self.addExpense(expense);
+                })
+            }
+            if (data.travelDates && data.travelDates.length > 0) {
+                var dates = data.travelDates;
+                self.travelDates = [];
+                dates.forEach(function(d) {
+                    var travelDate = new TravelDate(d);
+                    self.addTravelDate(d);
                 })
             }
         }
@@ -205,7 +216,8 @@ angular.module('starter.services')
 
 
 .factory('TravelDate', function() {
-    var TravelDate = function() {
+    var TravelDate = function(data) {
+        var self = this;
         this.travelDate = new Date();
             this.travelDate.setHours(12,0,0,0);
         this.departTime = new Date();
@@ -215,6 +227,16 @@ angular.module('starter.services')
         this.isBreakfast = false;
         this.isLunch = false;
         this.isDinner = false;
+        if (data) {
+            //boolean attributes from the JSON data
+            self.isBreakfast = data['isBreakfast'];
+            self.isLunch = data['isLunch'];
+            self.isDinner = data['isDinner'];
+            //date attributes hydrated as dates from JSON using moment
+            self.travelDate = moment(data['travelDate']).toDate();
+            self.departTime = moment(data['departTime']).toDate();
+            self.returnTime = moment(data['returnTime']).toDate();
+        }
     }
 
     return TravelDate;
