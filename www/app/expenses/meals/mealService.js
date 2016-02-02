@@ -21,13 +21,26 @@ angular.module('starter.services')
 })
 
 .factory('MealExp', function() {
-    var MealExp = function() {
+    var MealExp = function(data) {
+        var self = this;
         this.expenseCategory = "Meal";
         this.date = "";
         this.guestNames = "";
         this.restaurant = "";
         this.amount = "";
         this.isStudentAllowance = false;
+        if (data) {
+            //text attributes from the JSON data
+            self.expenseCategory = data['expenseCategory'];
+            self.guestNames = data['guestNames'];
+            self.restaurant = data['restaurant'];
+            //numeric attributes from the JSON data
+            self.amount = data['amount'];
+            //boolean values
+            self.isStudentAllowance = data['isStudentAllowance'];
+            //date attributes hydrated as dates from JSON using moment
+            self.date = moment(data['date']).toDate();
+        }
     }
     
     MealExp.prototype.info = function() {
