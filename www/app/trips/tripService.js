@@ -57,7 +57,7 @@ angular.module('starter.services')
     return self;
 })
 
-.factory('Trip', function(AirfareExp, HotelExp, TransportationExp) {
+.factory('Trip', function(AirfareExp, HotelExp, TransportationExp, MileageExp) {
     var Trip = function(data) {
         var self = this;
         //check the data param to check for a JSON object
@@ -108,6 +108,9 @@ angular.module('starter.services')
                     }
                     else if(expenseData['expenseCategory'] === 'Transportation') {
                         var expense = new TransportationExp(expenseData);                        
+                    }
+                    else if(expenseData['expenseCategory'] === 'Mileage') {
+                        var expense = new MileageExp(expenseData);                        
                     }
                     self.addExpense(expense);
                 })
