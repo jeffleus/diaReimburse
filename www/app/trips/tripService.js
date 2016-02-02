@@ -57,7 +57,7 @@ angular.module('starter.services')
     return self;
 })
 
-.factory('Trip', function(AirfareExp, HotelExp) {
+.factory('Trip', function(AirfareExp, HotelExp, TransportationExp) {
     var Trip = function(data) {
         var self = this;
         //check the data param to check for a JSON object
@@ -74,6 +74,8 @@ angular.module('starter.services')
         this.desinations = "";
         this.homeCity = "";
         this.vehicleUsed = "";
+        this.statDate = new Date();
+        this.endDate = new Date() + 1;
         this.travelDates = [];
         this.expenses = [];
         this.receipts = [];
@@ -82,7 +84,18 @@ angular.module('starter.services')
         //if data is JSON, then use extend to copy in all the values
         if (data && isDataObject) {
             //this needs to be improved to do a deeper copy so expenses are objects w/ class methods
-            angular.extend(self, data);
+            //angular.extend(self, data);
+            self.traveler = data['traveler'];
+            self.travelerEmail = data['travelerEmail'];
+            self.travelerDepartment = data['travelerDepartment'];
+            self.title = data['title'];
+            self.purpose = data['purpose'];
+            self.desinations = data['desinations'];
+            self.homeCity = data['homeCity'];
+            self.vehicleUsed = data['vehicleUsed'];
+            self.startDate = moment(data['startDate']).toDate();
+            self.endDate = moment(data['endDate']).toDate();
+            self.isSubmitted = data['isSubmitted'];
             if (data.expenses && data.expenses.length > 0) {
                 var expenses = data.expenses;
                 self.expenses = [];
@@ -92,6 +105,9 @@ angular.module('starter.services')
                     }
                     else if(expenseData['expenseCategory'] === 'Hotel') {
                         var expense = new HotelExp(expenseData);                        
+                    }
+                    else if(expenseData['expenseCategory'] === 'Transportation') {
+                        var expense = new TransportationExp(expenseData);                        
                     }
                     self.addExpense(expense);
                 })
