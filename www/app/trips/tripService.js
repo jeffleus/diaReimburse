@@ -57,7 +57,8 @@ angular.module('starter.services')
     return self;
 })
 
-.factory('Trip', function(AirfareExp, HotelExp, TransportationExp, MileageExp, MealExp, MiscExp, TravelDate) {
+.factory('Trip', function(AirfareExp, HotelExp, TransportationExp, MileageExp, MealExp
+                           , MiscExp, TravelDate, Receipt) {
     var Trip = function(data) {
         var self = this;
         //check the data param to check for a JSON object
@@ -127,6 +128,14 @@ angular.module('starter.services')
                 dates.forEach(function(d) {
                     var travelDate = new TravelDate(d);
                     self.addTravelDate(d);
+                })
+            }
+            if (data.receipts && data.receipts.length > 0) {
+                var receipts = data.receipts;
+                self.receipts = [];
+                receipts.forEach(function(r) {
+                    var rcpt = new Receipt(r);
+                    self.addReceipt(rcpt);
                 })
             }
         }
