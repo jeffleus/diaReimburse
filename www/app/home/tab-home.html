@@ -30,13 +30,8 @@
                 </select></ion-item>
             <ion-item class="item-divider item-icon-right">
                 Destinations
-                <i class="icon ion-plus-circled assertive" ng-click="addDestination()"></i></ion-item>
+<!--                <i class="icon ion-plus-circled assertive" ng-click="addDestination()"></i></ion-item>-->
             <ion-item>
-<!--
-                <ul><li ng-repeat="d in tripSvc.currentTrip.destinations">
-                    <i class="icon ion-close-circled assertive"></i>{{d.title}}</li>
-                </ul>
--->
                 <textarea style="height:66px;" ng-model="tripSvc.currentTrip.destinations"></textarea>
             </ion-item>
         </ion-list>

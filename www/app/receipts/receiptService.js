@@ -11,6 +11,7 @@ angular.module('starter.services')
         this.title = "";
         this.description = "";
         this.image = "";
+
         if (data) {
             self.title = data.title;
             self.description = data.description;

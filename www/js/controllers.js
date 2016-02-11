@@ -53,6 +53,7 @@ angular.module('starter.controllers', ['ngCookies', 'ionic-timepicker'])
     $scope.receiptSvc = ReceiptSvc;
     $scope.imageSvc = ImageSvc;
     $scope.gotoReceipts = _gotoReceipts;
+    $scope.docFolder = cordova.file.documentsDirectory;
     
     $scope.$on('$ionicView.beforeEnter', function() {
         //timeout addresses issue where delegate could not find elem because compile not complete

@@ -58,7 +58,7 @@ angular.module('starter.services')
 })
 
 .factory('Trip', function(AirfareExp, HotelExp, TransportationExp, MileageExp, MealExp
-                           , MiscExp, TravelDate, Receipt) {
+                           , MiscExp, TravelDate, Receipt, Note) {
     var Trip = function(data) {
         var self = this;
         //check the data param to check for a JSON object
@@ -136,6 +136,14 @@ angular.module('starter.services')
                 receipts.forEach(function(r) {
                     var rcpt = new Receipt(r);
                     self.addReceipt(rcpt);
+                })
+            }
+            if (data.notes && data.notes.length > 0) {
+                var notes = data.notes;
+                self.notes = [];
+                notes.forEach(function(n) {
+                    var note = new Note(n);
+                    self.addNote(note);
                 })
             }
         }
