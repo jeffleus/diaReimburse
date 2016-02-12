@@ -17,16 +17,17 @@ angular.module('starter.services')
     _init();
     function _init() {
         console.log('SettingsCtrl_init()');
-        self.firstName = "Joe";
-        self.lastName = "Bruin";
-        self.email = "jeffl@athletics.ucla.edu";
-        self.department = "Information Tech";
-        self.homeCity = "Westwood, CA";
-        self.defaultTitle = self.firstName.substring(0,1) + self.lastName + ' Trip'
-        self.defaultPurpose = "recruiting travel";
+//        self.firstName = "";
+//        self.lastName = "";
+//        self.email = "";
+//        self.department = "";
+//        self.homeCity = "";
+//        self.defaultTitle = "";//self.firstName.substring(0,1) + self.lastName + ' Trip'
+//        self.defaultPurpose = "";
         if (localStorage['lastSaved']) {
             self.lastSaved = moment(localStorage['lastSaved']).toDate();
         }
+        _resume();
     };
     
     function _resume() {
