@@ -14,6 +14,7 @@ angular.module('starter.controllers')
         if ($scope.isNewExpense) {
             TripSvc.currentTrip.addExpense($scope.newMileage);
         }
+        TripSvc.pause();
         $scope.modal.hide();			
     };
 });

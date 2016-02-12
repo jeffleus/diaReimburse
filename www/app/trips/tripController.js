@@ -166,6 +166,7 @@ angular.module('starter.controllers')
     
     $scope.addTrip = function() {
         TripSvc.addTrip($scope.newTrip);
+        TripSvc.pause();
         $scope.newTrip = {};
         $scope.modal.hide();
     };

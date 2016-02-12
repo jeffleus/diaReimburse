@@ -46,6 +46,7 @@ angular.module('starter.controllers')
     
     function _deleteReceipt(r) {
         TripSvc.currentTrip.deleteReceipt(r);
+        TripSvc.pause();
     }
     
     function _selectImage(r) {

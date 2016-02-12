@@ -61,6 +61,7 @@ angular.module('starter.controllers')
     };
     $scope.deleteExpense = function(exp) {
         TripSvc.currentTrip.deleteExpense(exp);
+        TripSvc.pause();
     };
     //
     // Modal event model: destroy, hide and remove

@@ -65,6 +65,7 @@ angular.module('starter.controllers', ['ngCookies', 'ionic-timepicker'])
     });
     
     function _gotoReceipts(t) {
+        TripSvc.pause();
         $state.go('app.single.receipts', {'playlistId':TripSvc.currentTrip.id});
     }
     

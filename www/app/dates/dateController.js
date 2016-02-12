@@ -35,11 +35,13 @@ angular.module('starter.controllers')
         if ($scope.isNewTravelDate) {
             TripSvc.currentTrip.addTravelDate($scope.newTravelDate);
         }
+        TripSvc.pause();
         $scope.modal.hide();			
     };
     
     function _deleteTravelDate(d) {
         TripSvc.currentTrip.deleteTravelDate(d);
+        TripSvc.pause();
     }
 
     function _showTravelDateModal(d) {

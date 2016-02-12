@@ -16,6 +16,7 @@ angular.module('starter.controllers')
         if ($scope.isNewExpense) {
             TripSvc.currentTrip.addExpense($scope.newAirfare);
         }
+        TripSvc.pause();
         $scope.modal.hide();			
     };
     
