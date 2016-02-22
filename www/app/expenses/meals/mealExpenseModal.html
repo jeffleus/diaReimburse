@@ -29,7 +29,8 @@
                 </label>
                 <ion-checkbox ng-model="newMeal.isStudentAllowance">Student Host Allowance</ion-checkbox>
             </ion-list>
-            <button class="button button-stable button-block disabled">Add Receipt</button>
+            <button class="button button-stable button-block disabled" 
+                    ng-hide="true" ng-click="addReceipt()">Add Receipt</button>
         </form>
     </ion-content>
 </div>
