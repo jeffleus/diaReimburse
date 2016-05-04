@@ -5,15 +5,12 @@ angular.module('starter.services')
     self.docDef = {};
     self.processTrip = _processTrip;
     
-    function _initDocDef() {
+    function _initDocDef(t) {
         self.docDef = {
             footer: function(currentPage, pageCount) { 
-                return { text:currentPage.toString() + ' of ' + pageCount, alignment:'center'}; 
+                return { text:currentPage.toString() + ' of ' + pageCount, alignment:'center', bold:true }; 
             },
-            header: function(currentPage, pageCount) {
-                // you can apply any logic and return any valid pdfmake element
-                return { text: 'UCLA Reimbursement Report', alignment: 'center' };
-            },
+            header: { text: 'UCLA Reimbursement Report\n' + t.title, alignment:'center', bold:true },
             styles: {
                 header: {
                     fontSize: 18,
@@ -31,29 +28,41 @@ angular.module('starter.services')
                 tableHeader: {
                     bold: true,
                     fontSize: 13,
-                    color: 'black'
+                    color: 'white',
+                    fillColor: '#06b',
+                    alignment: 'center'
+                },
+                rowHeader: {
+                    bold: true,
+                    fontSize: 13,
+                    color: 'white',
+                    fillColor: '#3F8ccc',
+                    alignment: 'right'
                 }
+
             },
             defaultStyle: {
                 // alignment: 'justify'
             },
             content: [
                 // placeholder for the actual doc content
-            ],
-            images: _images()
+            ]//,
+            //images: _images()
         };
     }
     
     function _processTrip(t) {
-        _initDocDef();
+        _initDocDef(t);
         self.docDef.content = self.docDef.content.concat(processTraveler(t));
         self.docDef.content = self.docDef.content.concat(processPerdiem(t));
         self.docDef.content = self.docDef.content.concat(processAirfare(t));
         self.docDef.content = self.docDef.content.concat(processHotel(t));
         self.docDef.content = self.docDef.content.concat(processGround(t));
+        self.docDef.content = self.docDef.content.concat(processMileage(t));
         self.docDef.content = self.docDef.content.concat(processMeals(t));
         self.docDef.content = self.docDef.content.concat(processMisc(t));
 //        self.docDef.content = self.docDef.content.concat(processReceipt(t));
+        console.log(JSON.stringify(self.docDef));
         return self.docDef;
     }
     
@@ -66,16 +75,17 @@ angular.module('starter.services')
 						table: {
                                 widths: [162,162,162], 
 								body: [
-										[{text:'Full Name',bold:true}
-										    , {text:'Sport/Functional Area',bold:true}
-									        , {text:'Email',bold:true}],
+										[{text:'Full Name',style:'tableHeader'}
+										    , {text:'Sport/Functional Area',style:'tableHeader'}
+									        , {text:'Email',style:'tableHeader'}],
 										[fullName, SettingsSvc.department, SettingsSvc.email],
-                                        [{text:'Travelers',bold:true,alignment:'right'}, {text:'Individual', colSpan:2}],
-                                        [{text:'Purpose',bold:true,alignment:'right'}, {text:t.purpose, colSpan:2}],
-                                        [{text:'Destinations',bold:true,alignment:'right'}, {text:t.desinations, colSpan:2}],
-                                        [{text:'Home City',bold:true,alignment:'right'}, {text:t.homeCity, colSpan:2}],
-                                        [{text:'Vehicle Used',bold:true,alignment:'right'}, {text:t.vehicleUsed, colSpan:2}],
-                                        [{text:'Special Notes:',bold:true,alignment:'right'}, {text:'', colSpan:2}],
+                                        [{text:'Travelers',style:'rowHeader'}, {text:'Individual', colSpan:2}],
+                                        [{text:'Trip',style:'rowHeader'}, {text:t.title, colSpan:2}],
+                                        [{text:'Purpose',style:'rowHeader'}, {text:t.purpose, colSpan:2}],
+                                        [{text:'Destinations',style:'rowHeader'}, {text:t.desinations, colSpan:2}],
+                                        [{text:'Home City',style:'rowHeader'}, {text:t.homeCity, colSpan:2}],
+                                        [{text:'Vehicle Used',style:'rowHeader'}, {text:t.vehicleUsed, colSpan:2}],
+                                        [{text:'Special Notes:',style:'rowHeader'}, {text:'', colSpan:2}],
                                         [{text:' ', colSpan:3}]
 								]
 						}
@@ -90,7 +100,12 @@ angular.module('starter.services')
                     table: {
                             widths: [106,100,100,50,50,50], 
                             body: [
-                                ['Date', 'Depart', 'Return', 'B', 'L', 'D']
+                                [{text:'Date',style:'tableHeader'}, 
+                                  {text:'Depart',style:'tableHeader'}, 
+                                  {text:'Return',style:'tableHeader'}, 
+                                  {text:'B',style:'tableHeader'}, 
+                                  {text:'L',style:'tableHeader'}, 
+                                  {text:'D',style:'tableHeader'}]
                             ]
                 }
         }];
@@ -128,7 +143,10 @@ angular.module('starter.services')
                     table: {
                             widths: [100,100,176,100], 
                             body: [
-                                ['Date', 'Airline', 'Destinations', 'Amount']
+                                [{text:'Date',style:'tableHeader'}, 
+                                  {text:'Airline',style:'tableHeader'}, 
+                                  {text:'Destinations',style:'tableHeader'}, 
+                                  {text:'Amount',style:'tableHeader'}]
                             ]
                     }
             }];
@@ -152,7 +170,10 @@ angular.module('starter.services')
 						table: {
                                 widths: [100,100,176,100], 
 								body: [
-								    ['Date', 'Hotel', 'Amount', 'Notes']
+								    [{text:'Date',style:'tableHeader'}, 
+                                     {text:'Hotel',style:'tableHeader'}, 
+                                     {text:'Amount',style:'tableHeader'}, 
+                                     {text:'Notes',style:'tableHeader'}]
 								]
 						}
 				}
@@ -178,7 +199,9 @@ angular.module('starter.services')
 						table: {
                                 widths: [100,280,100], 
 								body: [
-								    ['Date', 'Company', 'Amount']								]
+								    [{text:'Date',style:'tableHeader'}, 
+                                     {text:'Company',style:'tableHeader'}, 
+                                     {text:'Amount',style:'tableHeader'}]								]
 						}
 				}
         ];
@@ -196,8 +219,33 @@ angular.module('starter.services')
     };
     
     function processMileage(t) {
-        return [
+        var mileage = [{ text: 'Mileage', style: 'subheader' },
+				{
+						style: 'tableExample',
+						table: {
+                                widths: [50,130,130,50,50,50], 
+								body: [
+								    [{text:'Date',style:'tableHeader'}, {text:'Start/Dest',style:'tableHeader'},
+                                     {text:'Visited',style:'tableHeader'}, {text:'Miles',style:'tableHeader'},
+                                     {text:'Rate',style:'tableHeader'}, {text:'Amount',style:'tableHeader'}]
+                                ]
+						}
+				}
         ];
+
+        t.expenses.forEach(function(g) {
+            if (g.expenseCategory == "Mileage") {
+                mileage[1].table.body.push(
+                    [ moment(g.date).format("MM-DD-YY")
+                        , g.startLocation + '\n' + g.endLocation
+                        , g.placesVisited
+                        , g.mileage.toString()
+                        , '$' + g.rate.toFixed(2)
+                        , '$' + g.amount.toFixed(2) ])
+            }
+        });
+        
+        return mileage;
     };
     
     function processMeals(t) {
@@ -207,7 +255,11 @@ angular.module('starter.services')
 						table: {
                                 widths: [75,110,130,70,75], 
 								body: [
-								    ['Date', 'Guests', 'Restaurant', 'Student Host Allowance', 'Amount']
+								    [{text:'Date',style:'tableHeader'}, 
+                                      {text:'Guests',style:'tableHeader'}, 
+                                      {text:'Restaurant',style:'tableHeader'}, 
+                                      {text:'Student Host Allowance',style:'tableHeader'}, 
+                                      {text:'Amount',style:'tableHeader'}]
 								]
 						}
 				}
@@ -233,9 +285,11 @@ angular.module('starter.services')
 						table: {
                                 widths: [100,276,100], 
 								body: [
-								    ['Date', 'Description', 'Amount']								]
-						},
-						pageBreak:'after'
+								    [{text:'Date',style:'tableHeader'}, 
+                                     {text:'Description',style:'tableHeader'}, 
+                                     {text:'Amount',style:'tableHeader'}]								]
+						}//,
+						//pageBreak:'after'
 				}
         ];
         

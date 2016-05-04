@@ -91,6 +91,7 @@ angular.module('starter.controllers')
             TripSvc.currentTrip.addReceipt(r);
             ReceiptSvc.currentReceipt = r;
             ImageSvc.currentImage = r.image;
+            TripSvc.pause();
             //navigate to the receipt viewer at the 'app.browse' route
             $state.go('app.browse');            
         })
