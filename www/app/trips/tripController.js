@@ -1,6 +1,6 @@
 angular.module('starter.controllers')
 
-.controller('TripCtrl', function($scope, $http, $cookies, $ionicPopup, $ionicModal, $state
+.controller('TripCtrl', function($scope, $rootScope, $http, $cookies, $ionicPopup, $ionicModal, $state
                                     , $ionicLoading, $cordovaEmailComposer, $ionicListDelegate
                                     , AuthSvc, TripSvc, ImageSvc, ReportSvc, EmailSvc, ReportMock
                                     , Trip, TravelDate, AirfareExp, HotelExp, Receipt, Note
@@ -10,6 +10,7 @@ angular.module('starter.controllers')
     $scope.deleteTrip = _deleteTrip;
     $scope.sendTrip = _sendTrip;
     $scope.$on('$ionicView.enter', function() { _init(); });
+    $scope.$on('$ionicView.leave', function() { _save(); });
     _init();
     function _init() {
 //
@@ -21,6 +22,12 @@ angular.module('starter.controllers')
 		$scope.$on('ReportSvc::Done', function(event, err) {
 			hideLoading();
 		});
+        $rootScope.$on('$stateChangeSuccess', _save());
+    }
+    
+    function _save() {
+        console.log('pause tripSvc to save data')
+        TripSvc.pause();
     }
 
     function _newTrip() {

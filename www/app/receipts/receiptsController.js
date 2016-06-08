@@ -20,7 +20,11 @@ angular.module('starter.controllers')
         if (TripSvc.currentTrip.receipts && TripSvc.currentTrip.receipts.length > 0) {
             console.info('image dir: ' + TripSvc.currentTrip.receipts[0].image);
         }
-    });    
+    });
+    
+    $scope.$on('$ionicView.leave', function() {
+        
+    });
     
     function _addReceiptSheet() {
         var hideSheet = $ionicActionSheet.show({
