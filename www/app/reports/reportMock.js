@@ -10,39 +10,16 @@ angular.module('starter.services')
             footer: function(currentPage, pageCount) { 
                 return { text:currentPage.toString() + ' of ' + pageCount, alignment:'center', bold:true }; 
             },
-            header: { text: 'UCLA Reimbursement Report\n' + t.title, alignment:'center', bold:true },
+            header: { text: 'UCLA Reimbursement Report\n' + t.title, style:"header" },
             styles: {
-                header: {
-                    fontSize: 18,
-                    bold: true,
-                    margin: [0, 0, 0, 10]
-                },
-                subheader: {
-                    fontSize: 16,
-                    bold: true,
-                    margin: [0, 10, 0, 5]
-                },
-                tableExample: {
-                    margin: [0, 5, 0, 15]
-                },
-                tableHeader: {
-                    bold: true,
-                    fontSize: 13,
-                    color: 'white',
-                    fillColor: '#06b',
-                    alignment: 'center'
-                },
-                rowHeader: {
-                    bold: true,
-                    fontSize: 13,
-                    color: 'white',
-                    fillColor: '#3F8ccc',
-                    alignment: 'right'
-                }
-
+                "header":{"fontSize":12,"bold":true,"alignment":"center","margin":[0,8,0,0]},
+                "subheader":{"fontSize":10,"bold":true,"margin":[0,2,0,2]},
+                "tableExample":{"margin":[0,2,0,2]},
+                "tableHeader":{"bold":true,"fontSize":10,"color":"white","fillColor":"#06b","alignment":"center"},
+                "rowHeader":{"bold":true,"fontSize":10,"color":"white","fillColor":"#3F8ccc","alignment":"right"}
             },
             defaultStyle: {
-                // alignment: 'justify'
+                "fontSize":8
             },
             content: [
                 // placeholder for the actual doc content
@@ -68,6 +45,11 @@ angular.module('starter.services')
     
     function processTraveler(t) {
         var fullName = SettingsSvc.firstName + ' ' + SettingsSvc.lastName;
+        var notes = _.reduce(_.sortBy(t.notes, 'noteDate'), 
+                            function(memo, note) { 
+                                return memo + '\n(' + moment(note.noteDate).format("MM-DD-YY") + ')-' + note.notes;
+                            }, " ");
+        var notes = (t.destinations || "") + notes;
         return 	[		
                 { text: 'Traveler Information', style: 'subheader' },
 				{
@@ -75,22 +57,21 @@ angular.module('starter.services')
 						table: {
                                 widths: [162,162,162], 
 								body: [
-										[{text:'Full Name',style:'tableHeader'}
-										    , {text:'Sport/Functional Area',style:'tableHeader'}
-									        , {text:'Email',style:'tableHeader'}],
+										[{text:'Full Name',style:'tableHeader'}, 
+                                            {text:'Sport/Functional Area',style:'tableHeader'}, 
+                                            {text:'Email',style:'tableHeader'}],
 										[fullName, SettingsSvc.department, SettingsSvc.email],
-                                        [{text:'Travelers',style:'rowHeader'}, {text:'Individual', colSpan:2}],
-                                        [{text:'Trip',style:'rowHeader'}, {text:t.title, colSpan:2}],
-                                        [{text:'Purpose',style:'rowHeader'}, {text:t.purpose, colSpan:2}],
-                                        [{text:'Destinations',style:'rowHeader'}, {text:t.desinations, colSpan:2}],
-                                        [{text:'Home City',style:'rowHeader'}, {text:t.homeCity, colSpan:2}],
-                                        [{text:'Vehicle Used',style:'rowHeader'}, {text:t.vehicleUsed, colSpan:2}],
-                                        [{text:'Special Notes:',style:'rowHeader'}, {text:'', colSpan:2}],
-                                        [{text:' ', colSpan:3}]
+                                        [{"text":"Trip Type","style":"tableHeader"},
+                                            {"text":"Home City","style":"tableHeader"},
+                                            {"text":"Vehicle Used","style":"tableHeader"}],
+                                        ['Individual', t.homeCity, t.vehicleUsed],
+                                        [{text:'Purpose',style:'rowHeader'}, 
+                                            {text:t.purpose, colSpan:2}],
+                                        [{text:'Destinations/Notes:',style:'rowHeader'},
+                                            {text:notes||" ", colSpan:2}]
 								]
 						}
 				}];
-
     };
     
     function processPerdiem(t) {
@@ -110,7 +91,7 @@ angular.module('starter.services')
                 }
         }];
         
-        t.travelDates.forEach(function(td) {
+        _.sortBy(t.travelDates, 'travelDate').forEach(function(td) {
             perdiem[1].table.body.push(
                 [moment(td.travelDate).format("MM-DD-YYYY")
                 , moment(td.departTime).format("hh:mm")
@@ -151,7 +132,7 @@ angular.module('starter.services')
                     }
             }];
         
-        t.expenses.forEach(function(af) {
+        _.sortBy(t.expenses, 'date').forEach(function(af) {
             if (af.expenseCategory == "Airfare") {
                 airfare[1].table.body.push(
                     [moment(af.date).format("MM-DD-YYYY")
@@ -179,7 +160,7 @@ angular.module('starter.services')
 				}
         ];
 
-        t.expenses.forEach(function(h) {
+        _.sortBy(t.expenses, 'date').forEach(function(h) {
             if (h.expenseCategory == "Hotel") {
                 hotel[1].table.body.push(
                     [moment(h.date).format("MM-DD-YYYY")
@@ -206,7 +187,7 @@ angular.module('starter.services')
 				}
         ];
 
-        t.expenses.forEach(function(g) {
+        _.sortBy(t.expenses, 'date').forEach(function(g) {
             if (g.expenseCategory == "Transportation") {
                 ground[1].table.body.push(
                     [moment(g.date).format("MM-DD-YYYY")
@@ -233,7 +214,7 @@ angular.module('starter.services')
 				}
         ];
 
-        t.expenses.forEach(function(g) {
+        _.sortBy(t.expenses, 'date').forEach(function(g) {
             if (g.expenseCategory == "Mileage") {
                 mileage[1].table.body.push(
                     [ moment(g.date).format("MM-DD-YY")
@@ -265,7 +246,7 @@ angular.module('starter.services')
 				}
         ];
         
-        t.expenses.forEach(function(m) {
+        _.sortBy(t.expenses, 'date').forEach(function(m) {
             if (m.expenseCategory == "Meal") {
                 meal[1].table.body.push(
                     [moment(m.date).format("MM-DD-YYYY")
@@ -293,7 +274,7 @@ angular.module('starter.services')
 				}
         ];
         
-        t.expenses.forEach(function(m) {
+        _.sortBy(t.expenses, 'date').forEach(function(m) {
             if (m.expenseCategory == "Misc") {
                 misc[1].table.body.push(
                     [moment(m.date).format("MM-DD-YYYY")
