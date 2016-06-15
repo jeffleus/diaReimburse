@@ -19,6 +19,7 @@ angular.module('starter.controllers')
 //				showLoading('Opening Report...');
 				console.log('drafting email to send report');
 //				_sendEmail(filePath);
+				t.isSubmitted = true;
                 EmailSvc.sendEmail(TripSvc.currentTrip, filePath);
 			});
 	}
