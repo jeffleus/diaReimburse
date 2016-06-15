@@ -17,6 +17,7 @@ angular.module('starter.services')
         if (data) {
             self.title = data.title;
             self.description = data.description;
+			self.vendor = data.vendor;
             self.image = data.image;
             //date attributes hydrated as dates from JSON using moment
             self.date = moment(data['date']).toDate();
