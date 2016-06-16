@@ -183,7 +183,7 @@ angular.module('starter.services')
                 if (exp.amount) sum += exp.amount;
             })
         }
-        return sum;
+        return sum.toFixed(2);
     }
 	
 	function _addTravelDate(d) {

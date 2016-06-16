@@ -10,6 +10,15 @@ angular.module('starter.services')
         this.mileage = 0;
         this.isCourtesyCar = false;
         this.placesVisited = "";
+
+        Object.defineProperty(this, 'rate', {
+          get: function() { return self.isCourtesyCar ? 0.36 : 0.54; }
+        });
+
+        Object.defineProperty(this, 'amount', {
+          get: function() { return self.rate * self.mileage; }
+        });
+
         if (data) {
             //text attributes from the JSON data
             self.expenseCategory = data['expenseCategory'];
