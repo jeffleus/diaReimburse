@@ -69,8 +69,9 @@ angular.module('starter.controllers')
 //    				showLoading('Opening Report...');
                     console.log('drafting email to send report');
 //                    _sendEmail(t, filePath);
+                    EmailSvc.sendEmail(t,filePath);
                     t.isSubmitted = true;
-                    EmailSvc.sendEmail(t,filePath);                
+                
                     $ionicListDelegate.closeOptionButtons();
                 });
         }
