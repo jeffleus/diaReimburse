@@ -23,7 +23,7 @@ angular.module('starter.controllers')
     });
     
     $scope.$on('$ionicView.leave', function() {
-        TripSvc.pause();        
+        
     });
     
     function _addReceiptSheet() {
