@@ -10,7 +10,7 @@ angular.module('starter.controllers')
     $scope.editNote = _editNote;
     $scope.addNote = _addNote;
     $scope.deleteNote = _deleteNote;
-    
+
     $scope.newNote = null;
 
     function _addNote() {
@@ -26,11 +26,9 @@ angular.module('starter.controllers')
     
     function _deleteNote(n) {
         TripSvc.currentTrip.deleteNote(n);
-        TripSvc.pause();
     }
     
     function _closeModal() {
-        TripSvc.pause();
         $scope.modal.hide();
     }
     
