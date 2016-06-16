@@ -72,7 +72,7 @@ angular.module('starter.services')
         this.traveler = "";
         this.travelerEmail = "";
         this.travelerDepartment = "";
-        this.desinations = "";
+        this.destinations = "";
         this.homeCity = "";
         this.vehicleUsed = "";
         this.statDate = new Date();
@@ -91,7 +91,7 @@ angular.module('starter.services')
             self.travelerDepartment = data['travelerDepartment'];
             self.title = data['title'];
             self.purpose = data['purpose'];
-            self.desinations = data['desinations'];
+            self.destinations = data['destinations'];
             self.homeCity = data['homeCity'];
             self.vehicleUsed = data['vehicleUsed'];
             self.startDate = moment(data['startDate']).toDate();
