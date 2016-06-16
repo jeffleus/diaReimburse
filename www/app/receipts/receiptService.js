@@ -8,8 +8,6 @@ angular.module('starter.services')
 .factory('Receipt', function() {
     var Receipt = function(data) {
         var self = this;
-        this.date = new Date();
-        this.vendor = "";
         this.title = "";
         this.description = "";
         this.image = "";
@@ -18,8 +16,6 @@ angular.module('starter.services')
             self.title = data.title;
             self.description = data.description;
             self.image = data.image;
-            //date attributes hydrated as dates from JSON using moment
-            self.date = moment(data['date']).toDate();
         }
     }
 

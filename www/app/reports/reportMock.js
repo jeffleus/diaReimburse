@@ -5,11 +5,16 @@ angular.module('starter.services')
     self.docDef = {};
     self.processTrip = _processTrip;
     
-    function _initDocDef(t) {
+    function _initDocDef() {
         self.docDef = {
             footer: function(currentPage, pageCount) { 
-                return { text:currentPage.toString() + ' of ' + pageCount, alignment:'center', bold:true }; 
+                return { text:currentPage.toString() + ' of ' + pageCount, alignment:'center'}; 
             },
+            header: function(currentPage, pageCount) {
+                // you can apply any logic and return any valid pdfmake element
+                return { text: 'UCLA Reimbursement Report', alignment: 'center' };
+            },
+<<<<<<< HEAD
             header: { text: 'UCLA Reimbursement Report\n' + t.title, style:"header" },
             styles: {
                 "header":{"fontSize":12,"bold":true,"alignment":"center","margin":[0,8,0,0]},
@@ -17,29 +22,48 @@ angular.module('starter.services')
                 "tableExample":{"margin":[0,2,0,2]},
                 "tableHeader":{"bold":true,"fontSize":10,"color":"white","fillColor":"#06b","alignment":"center"},
                 "rowHeader":{"bold":true,"fontSize":10,"color":"white","fillColor":"#3F8ccc","alignment":"right"}
+=======
+            styles: {
+                header: {
+                    fontSize: 18,
+                    bold: true,
+                    margin: [0, 0, 0, 10]
+                },
+                subheader: {
+                    fontSize: 16,
+                    bold: true,
+                    margin: [0, 10, 0, 5]
+                },
+                tableExample: {
+                    margin: [0, 5, 0, 15]
+                },
+                tableHeader: {
+                    bold: true,
+                    fontSize: 13,
+                    color: 'black'
+                }
+>>>>>>> parent of 98f6ba6... bug fixes to v0.1.9
             },
             defaultStyle: {
                 "fontSize":8
             },
             content: [
                 // placeholder for the actual doc content
-            ]//,
-            //images: _images()
+            ],
+            images: _images()
         };
     }
     
     function _processTrip(t) {
-        _initDocDef(t);
+        _initDocDef();
         self.docDef.content = self.docDef.content.concat(processTraveler(t));
         self.docDef.content = self.docDef.content.concat(processPerdiem(t));
         self.docDef.content = self.docDef.content.concat(processAirfare(t));
         self.docDef.content = self.docDef.content.concat(processHotel(t));
         self.docDef.content = self.docDef.content.concat(processGround(t));
-        self.docDef.content = self.docDef.content.concat(processMileage(t));
         self.docDef.content = self.docDef.content.concat(processMeals(t));
         self.docDef.content = self.docDef.content.concat(processMisc(t));
 //        self.docDef.content = self.docDef.content.concat(processReceipt(t));
-        console.log(JSON.stringify(self.docDef));
         return self.docDef;
     }
     
@@ -57,6 +81,7 @@ angular.module('starter.services')
 						table: {
                                 widths: [162,162,162], 
 								body: [
+<<<<<<< HEAD
 										[{text:'Full Name',style:'tableHeader'}, 
                                             {text:'Sport/Functional Area',style:'tableHeader'}, 
                                             {text:'Email',style:'tableHeader'}],
@@ -69,6 +94,19 @@ angular.module('starter.services')
                                             {text:t.purpose, colSpan:2}],
                                         [{text:'Destinations/Notes:',style:'rowHeader'},
                                             {text:notes||" ", colSpan:2}]
+=======
+										[{text:'Full Name',bold:true}
+										    , {text:'Sport/Functional Area',bold:true}
+									        , {text:'Email',bold:true}],
+										[fullName, SettingsSvc.department, SettingsSvc.email],
+                                        [{text:'Travelers',bold:true,alignment:'right'}, {text:'Individual', colSpan:2}],
+                                        [{text:'Purpose',bold:true,alignment:'right'}, {text:t.purpose, colSpan:2}],
+                                        [{text:'Destinations',bold:true,alignment:'right'}, {text:t.desinations, colSpan:2}],
+                                        [{text:'Home City',bold:true,alignment:'right'}, {text:t.homeCity, colSpan:2}],
+                                        [{text:'Vehicle Used',bold:true,alignment:'right'}, {text:t.vehicleUsed, colSpan:2}],
+                                        [{text:'Special Notes:',bold:true,alignment:'right'}, {text:'', colSpan:2}],
+                                        [{text:' ', colSpan:3}]
+>>>>>>> parent of 98f6ba6... bug fixes to v0.1.9
 								]
 						}
 				}];
@@ -81,12 +119,7 @@ angular.module('starter.services')
                     table: {
                             widths: [106,100,100,50,50,50], 
                             body: [
-                                [{text:'Date',style:'tableHeader'}, 
-                                  {text:'Depart',style:'tableHeader'}, 
-                                  {text:'Return',style:'tableHeader'}, 
-                                  {text:'B',style:'tableHeader'}, 
-                                  {text:'L',style:'tableHeader'}, 
-                                  {text:'D',style:'tableHeader'}]
+                                ['Date', 'Depart', 'Return', 'B', 'L', 'D']
                             ]
                 }
         }];
@@ -124,10 +157,7 @@ angular.module('starter.services')
                     table: {
                             widths: [100,100,176,100], 
                             body: [
-                                [{text:'Date',style:'tableHeader'}, 
-                                  {text:'Airline',style:'tableHeader'}, 
-                                  {text:'Destinations',style:'tableHeader'}, 
-                                  {text:'Amount',style:'tableHeader'}]
+                                ['Date', 'Airline', 'Destinations', 'Amount']
                             ]
                     }
             }];
@@ -151,10 +181,7 @@ angular.module('starter.services')
 						table: {
                                 widths: [100,100,176,100], 
 								body: [
-								    [{text:'Date',style:'tableHeader'}, 
-                                     {text:'Hotel',style:'tableHeader'}, 
-                                     {text:'Amount',style:'tableHeader'}, 
-                                     {text:'Notes',style:'tableHeader'}]
+								    ['Date', 'Hotel', 'Amount', 'Notes']
 								]
 						}
 				}
@@ -180,9 +207,7 @@ angular.module('starter.services')
 						table: {
                                 widths: [100,280,100], 
 								body: [
-								    [{text:'Date',style:'tableHeader'}, 
-                                     {text:'Company',style:'tableHeader'}, 
-                                     {text:'Amount',style:'tableHeader'}]								]
+								    ['Date', 'Company', 'Amount']								]
 						}
 				}
         ];
@@ -200,19 +225,9 @@ angular.module('starter.services')
     };
     
     function processMileage(t) {
-        var mileage = [{ text: 'Mileage', style: 'subheader' },
-				{
-						style: 'tableExample',
-						table: {
-                                widths: [50,130,130,50,50,50], 
-								body: [
-								    [{text:'Date',style:'tableHeader'}, {text:'Start/Dest',style:'tableHeader'},
-                                     {text:'Visited',style:'tableHeader'}, {text:'Miles',style:'tableHeader'},
-                                     {text:'Rate',style:'tableHeader'}, {text:'Amount',style:'tableHeader'}]
-                                ]
-						}
-				}
+        return [
         ];
+<<<<<<< HEAD
 
         _.sortBy(t.expenses, 'date').forEach(function(g) {
             if (g.expenseCategory == "Mileage") {
@@ -227,6 +242,8 @@ angular.module('starter.services')
         });
         
         return mileage;
+=======
+>>>>>>> parent of 98f6ba6... bug fixes to v0.1.9
     };
     
     function processMeals(t) {
@@ -236,11 +253,7 @@ angular.module('starter.services')
 						table: {
                                 widths: [75,110,130,70,75], 
 								body: [
-								    [{text:'Date',style:'tableHeader'}, 
-                                      {text:'Guests',style:'tableHeader'}, 
-                                      {text:'Restaurant',style:'tableHeader'}, 
-                                      {text:'Student Host Allowance',style:'tableHeader'}, 
-                                      {text:'Amount',style:'tableHeader'}]
+								    ['Date', 'Guests', 'Restaurant', 'Student Host Allowance', 'Amount']
 								]
 						}
 				}
@@ -266,11 +279,9 @@ angular.module('starter.services')
 						table: {
                                 widths: [100,276,100], 
 								body: [
-								    [{text:'Date',style:'tableHeader'}, 
-                                     {text:'Description',style:'tableHeader'}, 
-                                     {text:'Amount',style:'tableHeader'}]								]
-						}//,
-						//pageBreak:'after'
+								    ['Date', 'Description', 'Amount']								]
+						},
+						pageBreak:'after'
 				}
         ];
         

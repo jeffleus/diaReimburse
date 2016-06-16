@@ -8,7 +8,7 @@
                   show-reorder="shouldShowReorder"
                   can-swipe="true">
             <ion-item class="item-divider">Airfare</ion-item>
-            <ion-item ng-repeat="ae in tripSvc.currentTrip.expenses | filter:{expenseCategory:'Airfare'} | orderBy:'date'"
+            <ion-item ng-repeat="ae in tripSvc.currentTrip.expenses | filter:{expenseCategory:'Airfare'}"
                       ng-click="showExpenseModal(0, ae)">
                 <ion-delete-button class="ion-minus-circled"></ion-delete-button>
                 <h2>{{ae.airline}}</h2>
@@ -19,7 +19,7 @@
                 </ion-option-button>
           </ion-item>
             <ion-item class="item-divider">Hotel</ion-item>
-            <ion-item ng-repeat="he in tripSvc.currentTrip.expenses | filter:{expenseCategory:'Hotel'} | orderBy:'date'"
+            <ion-item ng-repeat="he in tripSvc.currentTrip.expenses | filter:{expenseCategory:'Hotel'}"
                       ng-click="showExpenseModal(1, he)">
                 <ion-delete-button class="ion-minus-circled"></ion-delete-button>
                 <h2>{{he.hotelName}}</h2>
@@ -30,7 +30,7 @@
                 </ion-option-button>
           </ion-item>
             <ion-item class="item-divider">Ground</ion-item>
-            <ion-item ng-repeat="te in tripSvc.currentTrip.expenses | filter:{expenseCategory:'Transportation'} | orderBy:'date'"
+            <ion-item ng-repeat="te in tripSvc.currentTrip.expenses | filter:{expenseCategory:'Transportation'}"
                       ng-click="showExpenseModal(2, te)">
                 <ion-delete-button class="ion-minus-circled"></ion-delete-button>
                 <h2>{{te.company}}</h2>
@@ -41,18 +41,18 @@
                 </ion-option-button>
           </ion-item>
             <ion-item class="item-divider">Mileage</ion-item>
-            <ion-item ng-repeat="mile in tripSvc.currentTrip.expenses | filter:{expenseCategory:'Mileage'} | orderBy:'date'"
+            <ion-item ng-repeat="mile in tripSvc.currentTrip.expenses | filter:{expenseCategory:'Mileage'}"
                       ng-click="showExpenseModal(3, mile)">
                 <ion-delete-button class="ion-minus-circled"></ion-delete-button>
                 <h2>{{mile.location}}</h2>
-                <p>{{mile.date | date:'shortDate'}} - {{mile.mileage}} mi (${{mile.amount.toFixed(2)}})</p>
+                <p>{{mile.date | date:'shortDate'}} - {{mile.mileage}} mi</p>
                 <ion-option-button class="button-assertive"
                                    ng-click="deleteExpense(mile)">
                   Delete
                 </ion-option-button>
           </ion-item>
             <ion-item class="item-divider">Entertainment Meals</ion-item>
-            <ion-item ng-repeat="me in tripSvc.currentTrip.expenses | filter:{expenseCategory:'Meal'} | orderBy:'date'"
+            <ion-item ng-repeat="me in tripSvc.currentTrip.expenses | filter:{expenseCategory:'Meal'}"
                       ng-click="showExpenseModal(4, me)">
                 <ion-delete-button class="ion-minus-circled"></ion-delete-button>
                 <h2>{{me.restaurant}}</h2>
@@ -63,7 +63,7 @@
                 </ion-option-button>
           </ion-item>
             <ion-item class="item-divider">Misc</ion-item>
-            <ion-item ng-repeat="me in tripSvc.currentTrip.expenses | filter:{expenseCategory:'Misc'} | orderBy:'date'"
+            <ion-item ng-repeat="me in tripSvc.currentTrip.expenses | filter:{expenseCategory:'Misc'}"
                       ng-click="showExpenseModal(5, me)">
                 <ion-delete-button class="ion-minus-circled"></ion-delete-button>
                 <h2>{{me.description}}</h2>

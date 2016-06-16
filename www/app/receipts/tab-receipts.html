@@ -2,7 +2,7 @@
 	<ion-content class="has-header">
         <h3>Receipts</h3>
         <ion-list can-swipe="true">
-            <ion-item class="item-thumbnail-left" ng-repeat="r in tripSvc.currentTrip.receipts | orderBy:'date'"
+            <ion-item class="item-thumbnail-left" ng-repeat="r in tripSvc.currentTrip.receipts"
                       ng-click="selectImage(r)">
                 <img ng-src="{{docFolder}}{{r.image}}">
                 <h2>{{r.title}}</h2>
