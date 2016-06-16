@@ -26,10 +26,12 @@ angular.module('starter.controllers')
     
     function _deleteNote(n) {
         TripSvc.currentTrip.deleteNote(n);
+        TripSvc.pause();
     }
     
     function _closeModal() {
         $scope.modal.hide();
+        TripSvc.pause();
     }
     
 	function _loadNotesModal() {
