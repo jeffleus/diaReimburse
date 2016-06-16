@@ -10,7 +10,25 @@ angular.module('starter.controllers')
     $scope.deleteTravelDate = _deleteTravelDate;
     $scope.closeModal = _closeModal;
     //log the controller instantiation
-    console.log('DatesCtrl Controller... ');
+    console.log('DatesCtrl Controller...');
+//MODAL EVENTS
+    $scope.$on('modal.shown', function() {
+        if (!$scope.newTravelDate) {
+            $scope.newTravelDate = new TravelDate();
+        }
+    });
+	//Cleanup the modal when we're done with it!
+	$scope.$on('$destroy', function() {
+		$scope.modal.remove();
+	});
+	// Execute action on hide modal
+	$scope.$on('modal.hidden', function() {
+		// Execute action
+	});
+	// Execute action on remove modal
+	$scope.$on('modal.removed', function() {
+		// Execute action
+	});        
 				           
     function _saveTravelDate() {
         console.log('DatesCtrl: save new travel date');
@@ -38,7 +56,12 @@ angular.module('starter.controllers')
 	function _addTravelDate() {
 		_showTravelDateModal();
 	}
-//MODAL LOAD AND CLOSE				
+
+    function _closeModal() {
+		$scope.newTravelDate = null;
+		$scope.modal.hide();
+	};
+				
 	function _loadTravelDateModal() {
 		$ionicModal.fromTemplateUrl('app/dates/travelDateModal.html', {
 			scope: $scope,
@@ -48,27 +71,4 @@ angular.module('starter.controllers')
 			modal.show();
 		});
 	}
-
-    function _closeModal() {
-		$scope.newTravelDate = null;
-		$scope.modal.hide();
-	};
-//MODAL EVENTS
-    $scope.$on('modal.shown', function() {
-        if (!$scope.newTravelDate) {
-            $scope.newTravelDate = new TravelDate();
-        }
-    });
-	//Cleanup the modal when we're done with it!
-	$scope.$on('$destroy', function() {
-		$scope.modal.remove();
-	});
-	// Execute action on hide modal
-	$scope.$on('modal.hidden', function() {
-		// Execute action
-	});
-	// Execute action on remove modal
-	$scope.$on('modal.removed', function() {
-		// Execute action
-	});        
 });

@@ -10,7 +10,7 @@
                 <div class="col col-10">&nbsp;</div>
             </div>
             </ion-item>
-        <ion-item style="padding:0px;" ng-repeat="d in tripSvc.currentTrip.travelDates | orderBy:'travelDate' "
+        <ion-item style="padding:0px;" ng-repeat="d in tripSvc.currentTrip.travelDates"
 				  ng-click="showTravelDateModal(d)">
             <div class="row" style="padding:0px;">
                 <div class="col">{{d.travelDate | date:'MMM-d'}}</div>
