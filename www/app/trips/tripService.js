@@ -26,20 +26,12 @@ angular.module('starter.services')
     }
     
     function _resume() {
-//		var db = new PouchDB('diaReimburse');
-//		db.get('trips').then(function(doc) {
-//			var data = doc.data;
-//			_hydrate(data);
-//		});
-		
-		
-		
-//        if (localStorage['trips']) {
-//            //parse the localStorage for trips and then extend the current service to overwrite data
-//            var serviceData = JSON.parse(localStorage['trips']);
-//            //angular.extend(self, settings);
-//            _hydrate(serviceData);
-//        }
+        if (localStorage['trips']) {
+            //parse the localStorage for trips and then extend the current service to overwrite data
+            var serviceData = JSON.parse(localStorage['trips']);
+            //angular.extend(self, settings);
+            _hydrate(serviceData);
+        }
     }
     
     function _hydrate(data) {
@@ -57,11 +49,6 @@ angular.module('starter.services')
     }
     
     function _pause() {
-		var db = new PouchDB('diaReimburse');
-		db.get('trips').then(function(doc) {
-			doc.data = JSON.stringify(self);
-			db.put(doc);
-		});
         //stringify and stuff in localStorage
         var settings = JSON.stringify(self);
         localStorage['trips'] = settings;
