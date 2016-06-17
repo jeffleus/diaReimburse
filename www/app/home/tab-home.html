@@ -1,9 +1,13 @@
 <ion-view title="Trip-Dates">
+    <ion-nav-buttons side="right">
+      <button class="button button-balanced" ng-click="sendTrip()">submit</button>
+    </ion-nav-buttons>
 	<ion-content class="has-header">
         <ion-list>            
             <ion-item class="item-divider item-icon-right">
                 Trip Details
-                <i class="icon ion-share balanced" ng-click="sendTrip()"></i>
+<!-- 20160615-removed in favor of adding nav-bar button w/ text for better UX -->
+<!--                <i class="icon ion-share balanced" ng-click="sendTrip()"></i>-->
             </ion-item>
             <ion-item class="item-input">
                 <span class="input-label">Title</span>
