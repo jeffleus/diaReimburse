@@ -22,6 +22,11 @@ angular.module('starter.controllers')
         }
     });    
     
+    $scope.$on('$ionicView.leave', function() {
+        console.log('Leave Receipts Ctrl...');
+        TripSvc.pause();
+    });    
+    
     function _addReceiptSheet() {
         var hideSheet = $ionicActionSheet.show({
             buttons: [
