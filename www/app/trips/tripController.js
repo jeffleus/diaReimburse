@@ -10,6 +10,7 @@ angular.module('starter.controllers')
     $scope.deleteTrip = _deleteTrip;
     $scope.sendTrip = _sendTrip;
     $scope.$on('$ionicView.enter', function() { _init(); });
+    $scope.$on('$ionicView.leave', function() { _save(); });
     _init();
     function _init() {
 //
@@ -21,6 +22,11 @@ angular.module('starter.controllers')
 		$scope.$on('ReportSvc::Done', function(event, err) {
 			hideLoading();
 		});
+    }
+    
+    function _save() {
+        console.log('TripCtrl: saving tripSvc data to localStorage');
+        TripSvc.pause();
     }
 
     function _newTrip() {
@@ -62,8 +68,8 @@ angular.module('starter.controllers')
 //    				showLoading('Opening Report...');
                     console.log('drafting email to send report');
 //                    _sendEmail(t, filePath);
-                    EmailSvc.sendEmail(t,filePath);
                     t.isSubmitted = true;
+                    EmailSvc.sendEmail(t,filePath);
                 
                     $ionicListDelegate.closeOptionButtons();
                 });
