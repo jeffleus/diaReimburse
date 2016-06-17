@@ -63,6 +63,8 @@ angular.module('starter.controllers', ['ngCookies', 'ionic-timepicker'])
             $ionicScrollDelegate.$getByHandle('inner').zoomTo(0.5);
         }, 250);
     });
+
+    $scope.$on('$ionicView.leave', function() { console.log('BrowseCtrl: saving tripSvc data to localStorage on leave'); TripSvc.pause(); });
     
     function _gotoReceipts(t) {
         TripSvc.pause();
