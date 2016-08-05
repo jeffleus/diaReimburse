@@ -6,11 +6,15 @@ angular.module('starter.services')
     self.processTrip = _processTrip;
     
     function _initDocDef(t) {
+        self.reportTitle = 'UCLA Reimbursement Report\n' + t.title + 
+            ": " + moment(t.startDate).format("M-D-YY") + 
+            (t.endDate) ? " - " + moment(t.endDate).format("M-D-YY") : "";
+
         self.docDef = {
             footer: function(currentPage, pageCount) { 
                 return { text:currentPage.toString() + ' of ' + pageCount, alignment:'center', bold:true }; 
             },
-            header: { text: 'UCLA Reimbursement Report\n' + t.title, style:"header" },
+            header: { text: self.reportTitle, style:"header" },
             styles: {
                 "header":{"fontSize":12,"bold":true,"alignment":"center","margin":[0,8,0,0]},
                 "subheader":{"fontSize":10,"bold":true,"margin":[0,2,0,2]},
