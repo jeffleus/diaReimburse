@@ -8,7 +8,7 @@ angular.module('starter.services')
     function _initDocDef(t) {
         self.reportTitle = 'UCLA Reimbursement Report\n' + t.title + 
             ": " + moment(t.startDate).format("M-D-YY") + 
-            (t.endDate) ? " - " + moment(t.endDate).format("M-D-YY") : "";
+            ((t.endDate) ? " - " + moment(t.endDate).format("M-D-YY") : "");
 
         self.docDef = {
             footer: function(currentPage, pageCount) { 
