@@ -1,11 +1,12 @@
 angular.module('starter.controllers')
 
-.controller('HomeCtrl', function($scope, $rootScope, $timeout, $ionicPopup
+.controller('HomeCtrl', function($scope, $rootScope, $timeout, $ionicPopup, $state
                                      , $cordovaEmailComposer, ReportSvc, EmailSvc, TripSvc) {
     $scope.data = {};
     $scope.tripSvc = TripSvc;
     $scope.addDestination = _toggleSubmitted;
     $scope.sendTrip = _sendTrip;
+    $scope.gotoTrips = _gotoTrips;
     
     $rootScope.$on('$stateChangeSuccess', _save);
     
@@ -27,9 +28,17 @@ angular.module('starter.controllers')
 				console.log('drafting email to send report');
 //				_sendEmail(filePath);
                 TripSvc.currentTrip.isSubmitted = true;
-                EmailSvc.sendEmail(TripSvc.currentTrip, filePath);
+                EmailSvc
+                    .sendEmail(TripSvc.currentTrip, filePath)
+                    .then(function() {
+                        $state.go('app.trips');
+                    });
 			});
 	}
+
+    function _gotoTrips() {
+        $state.go('app.trips');
+    };
   
     function _addDestination() {
         $scope.data = {};        
