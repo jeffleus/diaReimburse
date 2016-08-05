@@ -1,49 +1,21 @@
 angular.module('starter.controllers')
 
 .controller('ExpenseCtrl', function($scope, $state, $timeout, $ionicActionSheet, $ionicModal
-                                     , AirfareExp, HotelExp, TripSvc) {
+                                     , AirfareExp, HotelExp, TripSvc, ReportSvc, EmailSvc) {
     $scope.expenseTypes = ['Airfare','Hotel','Ground','Mileage','Meals','Miscellaneous'];
     $scope.tripSvc = TripSvc;
     $scope.expenses = [];
     $scope.isNewExpense = false;
     
     $scope.addExpenseSheet = _addExpenseSheet;    
-    $scope.showExpenseModal = _showExpenseModal;    
+    $scope.showExpenseModal = _showExpenseModal;
+    $scope.sendTrip = _sendTrip;
     $scope.modals = [];
 //    _loadAirfareModal();
 //    _loadHotelModal();
 //    _loadMealsModal();
 //    _loadMiscModal();
 //    _loadTransportationModal();
-    
-    function _addExpenseSheet() {
-        var hideSheet = $ionicActionSheet.show({
-            buttons: [
-                { text: 'Airfare' },
-                { text: 'Hotel' },
-                { text: 'Ground' },
-                { text: 'Mileage' },
-                { text: 'Entertainment Meals' },
-                { text: 'Miscellaneous' },
-                { text: 'per Diem' },
-            ],
-            titleText: 'Add Expense',
-            cancelText: 'Cancel',
-            cancelFunc: function() {
-            },
-            buttonClicked: function(index) {
-                hideSheet();
-                console.log('expense modal index: ' + index);
-                if (index == 6) $state.go('app.single.dates');
-                _showExpenseModal(index);
-                return true;
-            }
-        });
-        //safety net timeout call to hide the action sheet if no input after 3sec
-        $timeout(function() {
-            hideSheet();
-        }, 3000);
-    }
                 
     //
     // Load Modal Content and Animation
@@ -78,6 +50,35 @@ angular.module('starter.controllers')
     $scope.$on('modal.removed', function() {
         // Execute action
     });
+    
+    function _addExpenseSheet() {
+        var hideSheet = $ionicActionSheet.show({
+            buttons: [
+                { text: 'Airfare' },
+                { text: 'Hotel' },
+                { text: 'Ground' },
+                { text: 'Mileage' },
+                { text: 'Entertainment Meals' },
+                { text: 'Miscellaneous' },
+                { text: 'per Diem' },
+            ],
+            titleText: 'Add Expense',
+            cancelText: 'Cancel',
+            cancelFunc: function() {
+            },
+            buttonClicked: function(index) {
+                hideSheet();
+                console.log('expense modal index: ' + index);
+                if (index == 6) $state.go('app.single.dates');
+                _showExpenseModal(index);
+                return true;
+            }
+        });
+        //safety net timeout call to hide the action sheet if no input after 3sec
+        $timeout(function() {
+            hideSheet();
+        }, 3000);
+    }
            
     function _showExpenseModal(index, exp) {
         if (!exp) { 
@@ -112,6 +113,20 @@ angular.module('starter.controllers')
                 break;
         }
     }
+    
+	function _sendTrip() {
+		ReportSvc
+			.runReportAsync(TripSvc.currentTrip)
+			.then(function(filePath) {
+				console.log('drafting email to send report');
+                TripSvc.currentTrip.isSubmitted = true;
+                EmailSvc
+                    .sendEmail(TripSvc.currentTrip, filePath)
+                    .then(function() {
+                        $state.go('app.trips');
+                    });
+			});
+	}
     
     function _loadAirfareModal() {
         //

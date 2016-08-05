@@ -1,11 +1,12 @@
 angular.module('starter.controllers')
 
 .controller('ReceiptsCtrl', function($scope, $q, $state, $timeout, $ionicActionSheet, $cordovaCamera, $cordovaFile
-                                      , TripSvc, ImageSvc, ReceiptSvc, Receipt) {
+                                      , TripSvc, ImageSvc, ReceiptSvc, ReportSvc, EmailSvc, Receipt) {
     $scope.addReceiptSheet = _addReceiptSheet;  
     $scope.deleteReceipt = _deleteReceipt;
     $scope.selectImage = _selectImage;
     $scope.takePicture = _takePicture;
+    $scope.sendTrip = _sendTrip;
     $scope.tripSvc = TripSvc;
     $scope.imageSvc = ImageSvc;
     $scope.docFolder = cordova.file.documentsDirectory;
@@ -104,6 +105,20 @@ angular.module('starter.controllers')
             console.error('_takePicture error: ' + error);
         });        
     }
+    
+    function _sendTrip() {
+		ReportSvc
+			.runReportAsync(TripSvc.currentTrip)
+			.then(function(filePath) {
+				console.log('drafting email to send report');
+                TripSvc.currentTrip.isSubmitted = true;
+                EmailSvc
+                    .sendEmail(TripSvc.currentTrip, filePath)
+                    .then(function() {
+                        $state.go('app.trips');
+                    });
+			});
+	}
               
     function getMaxFilename(dirEntry) {
         //create a reader and list direcotry contents
