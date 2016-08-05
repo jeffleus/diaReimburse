@@ -5,7 +5,7 @@ angular.module('starter.services')
     self.sendEmail = _sendEmail;    
     
     function _sendEmail(t, file) {
-		$cordovaEmailComposer.isAvailable().then(function() {
+		return $cordovaEmailComposer.isAvailable().then(function() {
             var subj = t.title;
             subj += ": " + moment(t.startDate).format("M-D-YY");
             subj += (t.endDate)?" - " + moment(t.endDate).format("M-D-YY"):"";

@@ -69,7 +69,11 @@ angular.module('starter.controllers')
                     console.log('drafting email to send report');
 //                    _sendEmail(t, filePath);
                     t.isSubmitted = true;
-                    EmailSvc.sendEmail(t,filePath);
+                    EmailSvc
+                        .sendEmail(t,filePath)
+                        .then(function() {
+                            $state.go('app.trips');
+                        });;
                 
                     $ionicListDelegate.closeOptionButtons();
                 });
