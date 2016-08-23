@@ -1,6 +1,6 @@
 angular.module('starter.controllers')
 
-.controller('ExpenseCtrl', function($scope, $state, $timeout, $ionicActionSheet, $ionicModal
+.controller('ExpenseCtrl', function($scope, $state, $timeout, $ionicActionSheet, $ionicModal, $ionicPopup
                                      , AirfareExp, HotelExp, TripSvc, ReportSvc, EmailSvc) {
     $scope.expenseTypes = ['Airfare','Hotel','Ground','Mileage','Meals','Miscellaneous'];
     $scope.tripSvc = TripSvc;
@@ -115,18 +115,49 @@ angular.module('starter.controllers')
     }
     
 	function _sendTrip() {
-		ReportSvc
-			.runReportAsync(TripSvc.currentTrip)
-			.then(function(filePath) {
-				console.log('drafting email to send report');
-                TripSvc.currentTrip.isSubmitted = true;
-                EmailSvc
-                    .sendEmail(TripSvc.currentTrip, filePath)
-                    .then(function() {
-                        $state.go('app.trips');
+        var t = TripSvc.currentTrip;
+        
+        _confirmNoReceipts(t).then(function(res) {
+            var reportPath = "";
+            
+            if (res) {
+                return ReportSvc
+                .runReportAsync(TripSvc.currentTrip)
+                .then(function(filePath) {
+                    reportPath = filePath;
+                    TripSvc.currentTrip.isSubmitted = true;
+                    return $ionicPopup.alert({ 
+                        title: 'Trip Total', 
+                        template: 'A report was generated for your trip totalling $' 
+                            + t.totalExpenses() + '.  An email is being drafted with the report attached for completing your submission to the travel office.' 
                     });
-			});
+                }).then(function(res) {
+                    console.log('drafting email to send report');
+                    return EmailSvc
+                        .sendEmail(TripSvc.currentTrip, reportPath);                        
+                }).then(function() {
+                    $state.go('app.trips');
+                });                            
+            } else {
+                console.log('no receipts, trip submit cancelled...');
+            }
+
+        });        
 	}
+    
+    function _confirmNoReceipts(trip) {
+        if (trip.receipts && trip.receipts.length < 1) {
+            var confirmOptions = {
+              title: 'No Receipts', // String. The title of the popup.
+              template: 'Your trip does not appear to have any receipts.  Are you sure you want to submit this trip without receipts?'
+            };
+            
+            return $ionicPopup.confirm( confirmOptions );
+
+        } else {
+            return true;
+        }        
+    }
     
     function _loadAirfareModal() {
         //

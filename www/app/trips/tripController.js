@@ -59,24 +59,38 @@ angular.module('starter.controllers')
         return trip;
     }
 	
-	function _sendTrip(t) {        
-        if (_validateTrip(t)) {            
-            ReportSvc
-                .runReportAsync(t)
-                .then(function(filePath) {
-//                    console.log('new async report routine');
-//    				showLoading('Opening Report...');
-                    console.log('drafting email to send report');
-//                    _sendEmail(t, filePath);
-                    t.isSubmitted = true;
-                    EmailSvc
-                        .sendEmail(t,filePath)
-                        .then(function() {
-                            $state.go('app.trips');
-                        });;
-                
-                    $ionicListDelegate.closeOptionButtons();
-                });
+	function _sendTrip(t) {
+        var t = TripSvc.currentTrip;
+        
+        if (_validateTrip(t)) {
+            _confirmNoReceipts(t).then(function(res) {
+                var reportPath = "";
+            
+                if (res) {
+                    return ReportSvc.runReportAsync(t)
+                    .then(function(filePath) {
+                        reportPath = filePath;
+                        t.isSubmitted = true;
+                        return $ionicPopup.alert({ 
+                            title: 'Trip Total', 
+                            template: 'A report was generated for your trip totalling $' 
+                                + t.totalExpenses() + '.  An email is being drafted with the report attached for completing your submission to the travel office.' 
+                        });
+                    }).then(function(res) {
+                        console.log('drafting email to send report');
+                        return EmailSvc
+                            .sendEmail(TripSvc.currentTrip, reportPath);
+                    }).then(function() {
+                        //$state.go('app.trips');
+                        $ionicListDelegate.closeOptionButtons();
+                    });
+                }
+            });
+        } else {
+            return $ionicPopup.alert({ 
+                title: 'Invalid Trip', 
+                template: 'Your trip is missing a purpose, or a start date, or both.  Please correct and resubmit.'
+            });
         }
 	}
 
@@ -85,6 +99,20 @@ angular.module('starter.controllers')
         isValid = isValid && (t.purpose && t.purpose.length > 0);
         isValid = isValid && (t.startDate);
         return isValid;
+    }
+    
+    function _confirmNoReceipts(trip) {
+        if (trip.receipts && trip.receipts.length < 1) {
+            var confirmOptions = {
+              title: 'No Receipts', // String. The title of the popup.
+              template: 'Your trip does not appear to have any receipts.  Are you sure you want to submit this trip without receipts?'
+            };
+            
+            return $ionicPopup.confirm( confirmOptions );
+
+        } else {
+            return true;
+        }        
     }
         
     function _mockAirfare(t) {
