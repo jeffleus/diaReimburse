@@ -1,7 +1,7 @@
 angular.module('starter.controllers')
 
 .controller('ReceiptsCtrl', function($scope, $q, $state, $timeout, $ionicActionSheet, $cordovaCamera, $cordovaFile
-                                      , TripSvc, ImageSvc, ReceiptSvc, ReportSvc, EmailSvc, Receipt) {
+                                      , TripSvc, ImageSvc, ReceiptSvc, ReportSvc, EmailSvc, Receipt, Pouch) {
     $scope.addReceiptSheet = _addReceiptSheet;  
     $scope.deleteReceipt = _deleteReceipt;
     $scope.selectImage = _selectImage;
@@ -74,6 +74,7 @@ angular.module('starter.controllers')
           saveToPhotoAlbum: false
         };
         var outputFile = "";
+        var imgData = "";
         
         $cordovaFile.checkDir(cordova.file.documentsDirectory, '')
         .then(function(success) {
@@ -88,7 +89,26 @@ angular.module('starter.controllers')
             //now that a suitable filename is available, kickoff the picture takings (camera or library)
             return $cordovaCamera.getPicture(options);
         }).then(function(imageData) {
-            return movePhoto(imageData, outputFile);
+            //placeholder for now to allow passing thru the promise chain...
+            imgData = imageData;
+            return _getImageFileEntry(imageData)
+            .then(function(fileEntry) {
+                return _getImageFile(fileEntry);
+            }).then(function(file) {
+                return Pouch.db.put({
+                    _id: moment().format(''),
+                    _attachments: {
+                        filename: {
+                            type: 'image/jpeg',
+                            data: file
+                        }
+                    }
+                });
+            });
+        }).then(function() {
+            //links up back to the initial response from getPic...
+            return movePhoto(imgData, outputFile);
+                
         }).then(function(success) {
             console.log('image moved: ' + success);
             //update the receipt object, and persist to tripSvc, receiptSvc, and imgSvc
@@ -104,6 +124,25 @@ angular.module('starter.controllers')
         .catch(function(error) {
             console.error('_takePicture error: ' + error);
         });        
+    }
+    
+    function _getImageFileEntry(fileUri) {        
+        return $q(function(resolve, reject) {
+            window.resolveLocalFileSystemURI(fileUri,function(fileEntry) {
+                resolve(fileEntry);
+            }, function(error) {
+                reject(error);
+            });
+        });
+    }
+    function _getImageFile(fileEntry) {        
+        return $q(function(resolve, reject) {
+            fileEntry.file(function(file) {
+                resolve(file);
+            }, function(error) {
+                reject(error);
+            });
+        });
     }
     
     function _sendTrip() {

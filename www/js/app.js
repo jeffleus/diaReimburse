@@ -18,7 +18,7 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.services', 'starter.co
           StatusBar.styleDefault();
         }
         SettingsSvc.resume();
-        TripSvc.resume();
+        TripSvc.resume();        
     });
     //handle Cordova resume (enter foreground) and pause (enter background events)
     $ionicPlatform.on('resume', function(event) {
