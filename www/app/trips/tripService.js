@@ -1,6 +1,6 @@
 angular.module('starter.services')
 
-.service('TripSvc', function(Trip) {
+.service('TripSvc', function(Trip, Pouch) {
     var self = this;    
     self.trips = [];
     self.currentTrip = {};
@@ -12,11 +12,18 @@ angular.module('starter.services')
     function _addTrip(t) {
         console.log('TripSvc::addTrip - ' + t.title);
         if (t.id == -1) t.id = self.trips.length;
-        self.trips.push(t);
+        t._id = moment().format('YYYYMMDD.hhmmss.SSS');
+        Pouch.db.put(t).then(function(result) {
+            self.trips.push(t);
+            console.log(result);
+        }).catch(function(err) {
+            console.log(err);
+        });
     }
     
     function _deleteTrip(t) {
         console.log('TripSvc::deleteTrip - ' + t.title);
+        Pouch.db.remove(t._id, t._rev);
         var index = self.trips.indexOf(t);
         if (index >-1) {
             self.trips.splice(index,1);
@@ -26,24 +33,34 @@ angular.module('starter.services')
     }
     
     function _resume() {
-        if (localStorage['trips']) {
-            //parse the localStorage for trips and then extend the current service to overwrite data
-            var serviceData = JSON.parse(localStorage['trips']);
-            //angular.extend(self, settings);
-            _hydrate(serviceData);
+        if (Pouch && Pouch.db) {
+            return Pouch.db.allDocs({include_docs:true}).then(function(result) {
+                _hydrate(result);
+            }).catch(function(err) {
+                console.error(err);
+            });
         }
+//        if (localStorage['trips']) {
+//            //parse the localStorage for trips and then extend the current service to overwrite data
+//            var serviceData = JSON.parse(localStorage['trips']);
+//            //angular.extend(self, settings);
+//            _hydrate(serviceData);
+//        }
     }
     
     function _hydrate(data) {
         //check for an array of trips in the json data provided
-        if (data.trips) {
+        if (data.rows) {
             //reset the internal array of trips in the service, then loop each trip
             self.trips.length = 0;
-            data.trips.forEach(function(tripData) {
+            data.rows.forEach(function(tripData) {
                 //pass the trip JSON to the constrcutor of the Trip class
-                var trip = new Trip(tripData);
+                var trip = new Trip(tripData.doc);
+//                trip.id = tripData.doc._id;
+//                trip.rev = tripData.doc._rev
                 //and add the trip to the collection in the service
-                _addTrip(trip);
+                self.trips.push(trip)
+                //_addTrip(trip);
             })
         }
     }
@@ -52,6 +69,15 @@ angular.module('starter.services')
         //stringify and stuff in localStorage
         var settings = JSON.stringify(self);
         localStorage['trips'] = settings;
+        
+//        self.trips.forEach(function(trip) {
+//            Pouch.db.put(trip._id, trip._rev)
+//        })
+        return Pouch.db.bulkDocs(self.trips).then(function(result) {
+            console.info('tripService.pause()');
+        }).catch(function(err) {
+            console.error('ERR: tripService.pause()');
+        });
     }
     
     return self;
@@ -84,6 +110,8 @@ angular.module('starter.services')
         this.isSubmitted = false;
         //if data is JSON, then use extend to copy in all the values
         if (data && isDataObject) {
+            self._id = data._id;
+            self._rev = data._rev;
             //this needs to be improved to do a deeper copy so expenses are objects w/ class methods
             //angular.extend(self, data);
             self.traveler = data['traveler'];

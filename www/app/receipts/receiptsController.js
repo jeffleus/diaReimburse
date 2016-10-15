@@ -75,6 +75,8 @@ angular.module('starter.controllers')
         };
         var outputFile = "";
         var imgData = "";
+        var blob;
+        var imageId;
         
         $cordovaFile.checkDir(cordova.file.documentsDirectory, '')
         .then(function(success) {
@@ -95,15 +97,24 @@ angular.module('starter.controllers')
             .then(function(fileEntry) {
                 return _getImageFile(fileEntry);
             }).then(function(file) {
-                return Pouch.db.put({
-                    _id: moment().format(''),
-                    _attachments: {
-                        filename: {
-                            type: 'image/jpeg',
-                            data: file
-                        }
-                    }
-                });
+//                blob = file;
+//                blob.type = 'image/jpeg';
+                imageId = moment().format(''); 
+                
+                return Pouch.db.putAttachment(imageId, imgData, file, 'image/jpeg');
+//                return Pouch.db.put({
+//                    _id: imageId,
+//                    _attachments: {
+//                        filename: {
+//                            type: 'image/jpeg',
+//                            data: file
+//                        }
+//                    }
+//                });
+            });
+        }).then(function() {
+            return Pouch.db.getAttachment(imageId, imgData).then(function(imgBlob) {
+                blob = imgBlob;
             });
         }).then(function() {
             //links up back to the initial response from getPic...
@@ -114,6 +125,7 @@ angular.module('starter.controllers')
             //update the receipt object, and persist to tripSvc, receiptSvc, and imgSvc
             var r = new Receipt();
             r.image = success.name;
+            r.imageUrl = URL.createObjectURL(blob);
             TripSvc.currentTrip.addReceipt(r);
             ReceiptSvc.currentReceipt = r;
             ImageSvc.currentImage = r.image;

@@ -7,7 +7,8 @@
         <ion-list can-swipe="true">
             <ion-item class="item-thumbnail-left" ng-repeat="r in tripSvc.currentTrip.receipts | orderBy:'date'"
                       ng-click="selectImage(r)">
-                <img ng-src="{{docFolder}}{{r.image}}">
+                <img ng-src="{{r.imageUrl}}">
+<!--                <img ng-src="{{docFolder}}{{r.image}}">-->
                 <h2>{{r.title}}</h2>
                 <p>{{r.description}}</p>
                 <ion-option-button class="button-assertive"

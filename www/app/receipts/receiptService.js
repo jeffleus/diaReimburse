@@ -13,6 +13,7 @@ angular.module('starter.services')
         this.title = "";
         this.description = "";
         this.image = "";
+        this.imageUrl = "";
 
         if (data) {
             self.vendor = data.vendor;
