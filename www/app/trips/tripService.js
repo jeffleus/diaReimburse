@@ -31,10 +31,57 @@ angular.module('starter.services')
             console.log('trip not found in tripSvc');
         }
     }
+	
+	
+	function _migrateResume() {
+		
+		var isLocal = !!localStorage['trips'];
+		var localData;
+		
+		
+		
+		
+		var serviceData = JSON.parse(localStorage['trips']);
+		_hydrate(serviceData);
+
+		.then check pouch.db.info
+			.then 
+			
+			
+		return hydrateFromPouch;
+		
+		//check for localStorage
+		
+		//yes
+		// check for Pouch and DB
+		
+			//no, hydrate from localStorage and stop
+		
+			//yes, delete localStorage and hydrate from DB
+		
+		//no
+			//hydrate from DB
+		
+		
+	}
+	
     
     function _resume() {
         if (Pouch && Pouch.db) {
-            return Pouch.db.allDocs({include_docs:true}).then(function(result) {
+			if (localStorage['trips']) {
+				//parse the localStorage for trips and then extend the current service to overwrite data
+				var serviceData = JSON.parse(localStorage['trips']);
+
+			}
+			Pouch.db.info().then(function(info) {
+				if (info.update_seq === 0) {
+					_pause();
+				} else {
+					localStorage.removeItem('trips');
+				}
+			});
+
+			return Pouch.db.allDocs({include_docs:true}).then(function(result) {
                 _hydrate(result);
             }).catch(function(err) {
                 console.error(err);
