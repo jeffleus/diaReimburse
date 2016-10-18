@@ -77,6 +77,7 @@ angular.module('starter.controllers')
         var imgData = "";
         var blob;
         var imageId;
+        var imageFile = "";
         
         $cordovaFile.checkDir(cordova.file.documentsDirectory, '')
         .then(function(success) {
@@ -99,9 +100,10 @@ angular.module('starter.controllers')
             }).then(function(file) {
 //                blob = file;
 //                blob.type = 'image/jpeg';
-                imageId = moment().format(''); 
+                imageId = 'rcpt_' + moment().format('YYYYMMDD.hhmmss.SSS');
+                imageFile = file.name;
                 
-                return Pouch.db.putAttachment(imageId, imgData, file, 'image/jpeg');
+                return Pouch.db.putAttachment(TripSvc.currentTrip._id, file.name, TripSvc.currentTrip._rev, file, 'image/jpeg');
 //                return Pouch.db.put({
 //                    _id: imageId,
 //                    _attachments: {
@@ -112,8 +114,8 @@ angular.module('starter.controllers')
 //                    }
 //                });
             });
-        }).then(function() {
-            return Pouch.db.getAttachment(imageId, imgData).then(function(imgBlob) {
+        }).then(function(result) {
+            return Pouch.db.getAttachment(TripSvc.currentTrip._id, imageFile).then(function(imgBlob) {
                 blob = imgBlob;
             });
         }).then(function() {

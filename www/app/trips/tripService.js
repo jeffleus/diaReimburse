@@ -1,6 +1,6 @@
 angular.module('starter.services')
 
-.service('TripSvc', function(Trip, Pouch) {
+.service('TripSvc', function($q, Trip, Pouch) {
     var self = this;    
     self.trips = [];
     self.currentTrip = {};
@@ -30,63 +30,90 @@ angular.module('starter.services')
         } else {
             console.log('trip not found in tripSvc');
         }
-    }
-	
+    }	
 	
 	function _migrateResume() {
-		
-		var isLocal = !!localStorage['trips'];
-		var localData;
-		
-		
-		
-		
-		var serviceData = JSON.parse(localStorage['trips']);
-		_hydrate(serviceData);
-
-		.then check pouch.db.info
-			.then 
-			
-			
-		return hydrateFromPouch;
-		
-		//check for localStorage
-		
-		//yes
-		// check for Pouch and DB
-		
-			//no, hydrate from localStorage and stop
-		
-			//yes, delete localStorage and hydrate from DB
-		
-		//no
-			//hydrate from DB
-		
-		
+        _hydrateFromPouch();
+//		//check for localStorage in the 'trips' key
+//		var isLocal = !!localStorage['trips'];
+//        //check for the pouch serve and db object
+//        var isPouch = (Pouch && Pouch.db);
+//		
+//        
+//        $q.when( isPouch ).then( function(isPouch) {
+//            if (isPouch) {
+//                return Pouch.db.info();
+//            } else return;
+//        }).then(function(info) {
+//
+//            if (isLocal) {
+//                if (info && info.update_seq == 0) {
+//            //Case1: localStorage and a NEW pouchdb
+//                    _hydrateFromLocal();
+//                    //pause to store in pouchDB and start migration
+//                    _pause();                    
+//                } else if (info && info.update_seq !== 0) {
+//            //Case2: localStorage and a data in pouchdb
+//                    //clear the local store to complete the migration
+//                    localStorage.removeItem('trips');
+//                    _hydrateFromPouch();
+//                } else {
+//            //Case3: no pouchdb so carry on w/ localStorage
+//                    _hydrateFromLocal();
+//                }                
+//            } else {
+//                if (isPouch) {
+//                    _hydrateFromPouch();
+//                } else {
+//                    throw new Error('There is no localStorage and no PouchDB for trips.');
+//                }                
+//            }
+//        });
 	}
 	
+    function _hydrateFromLocal() {
+        if (localStorage['trips']) {
+            //parse the localStorage for trips and then extend the current service to overwrite data
+            var serviceData = JSON.parse(localStorage['trips']);
+            //angular.extend(self, settings);
+            return _hydrate(serviceData);
+        } else { 
+            throw new Error('hydrateFromLocal: There is no localStorage of trips.');
+        }
+    }
+    
+    function _hydrateFromPouch() {
+        return Pouch.db.allDocs({include_docs:true}).then(function(result) {
+            return _hydrate(result);
+        }).catch(function(err) {
+            console.error(err);
+        });
+    }
     
     function _resume() {
-        if (Pouch && Pouch.db) {
-			if (localStorage['trips']) {
-				//parse the localStorage for trips and then extend the current service to overwrite data
-				var serviceData = JSON.parse(localStorage['trips']);
+//        if (Pouch && Pouch.db) {
+//			if (localStorage['trips']) {
+//				//parse the localStorage for trips and then extend the current service to overwrite data
+//				var serviceData = JSON.parse(localStorage['trips']);
+//
+//			}
+//			Pouch.db.info().then(function(info) {
+//				if (info.update_seq === 0) {
+//					_pause();
+//				} else {
+//					localStorage.removeItem('trips');
+//				}
+//			});
+//
+//			return Pouch.db.allDocs({include_docs:true}).then(function(result) {
+//                _hydrate(result);
+//            }).catch(function(err) {
+//                console.error(err);
+//            });
+//        }
+        _migrateResume();
 
-			}
-			Pouch.db.info().then(function(info) {
-				if (info.update_seq === 0) {
-					_pause();
-				} else {
-					localStorage.removeItem('trips');
-				}
-			});
-
-			return Pouch.db.allDocs({include_docs:true}).then(function(result) {
-                _hydrate(result);
-            }).catch(function(err) {
-                console.error(err);
-            });
-        }
+        
 //        if (localStorage['trips']) {
 //            //parse the localStorage for trips and then extend the current service to overwrite data
 //            var serviceData = JSON.parse(localStorage['trips']);
@@ -97,14 +124,20 @@ angular.module('starter.services')
     
     function _hydrate(data) {
         //check for an array of trips in the json data provided
-        if (data.rows) {
+        if (data) {
+            var trips = data.trips?data.trips:data.rows;
             //reset the internal array of trips in the service, then loop each trip
             self.trips.length = 0;
-            data.rows.forEach(function(tripData) {
+            trips.forEach(function(tripData) {
                 //pass the trip JSON to the constrcutor of the Trip class
                 var trip = new Trip(tripData.doc);
 //                trip.id = tripData.doc._id;
 //                trip.rev = tripData.doc._rev
+                
+                trip.receipts.forEach(function(r) {
+                    
+                })
+                
                 //and add the trip to the collection in the service
                 self.trips.push(trip)
                 //_addTrip(trip);
@@ -113,17 +146,19 @@ angular.module('starter.services')
     }
     
     function _pause() {
-        //stringify and stuff in localStorage
-        var settings = JSON.stringify(self);
-        localStorage['trips'] = settings;
+//        //stringify and stuff in localStorage
+//        var settings = JSON.stringify(self);
+//        localStorage['trips'] = settings;
         
 //        self.trips.forEach(function(trip) {
 //            Pouch.db.put(trip._id, trip._rev)
 //        })
         return Pouch.db.bulkDocs(self.trips).then(function(result) {
             console.info('tripService.pause()');
+            return;
         }).catch(function(err) {
             console.error('ERR: tripService.pause()');
+            return;
         });
     }
     
