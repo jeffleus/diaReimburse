@@ -134,16 +134,23 @@ angular.module('starter.services')
 //                trip.id = tripData.doc._id;
 //                trip.rev = tripData.doc._rev
                 
-                trip.receipts.forEach(function(r) {
-                    
-                })
-                
                 //and add the trip to the collection in the service
                 self.trips.push(trip)
                 //_addTrip(trip);
             })
         }
     }
+    
+    function _saveTrip(t) {
+        t.receipts.forEach(function(r) {
+            delete r.imageUrl;
+        })
+        
+        return Pouch.db.put(t).then(function(result) {
+            console.info('trip saved to db');
+            console.log(result);
+        });
+    }    
     
     function _pause() {
 //        //stringify and stuff in localStorage
@@ -153,6 +160,23 @@ angular.module('starter.services')
 //        self.trips.forEach(function(trip) {
 //            Pouch.db.put(trip._id, trip._rev)
 //        })
+
+        
+        
+//        var chain = $q.when();
+//        self.trips.forEach(function(t) {
+//            chain = chain.then(_saveTrip(t));
+//        })
+//        
+//        return chain.then(function() {
+//            console.log('trips saved to database');
+//        });
+//        self.trips.forEach(function(t) {
+//            t.receipts.forEach(function(r) {
+//                delete r.imageUrl;
+//            });
+//        });
+        
         return Pouch.db.bulkDocs(self.trips).then(function(result) {
             console.info('tripService.pause()');
             return;

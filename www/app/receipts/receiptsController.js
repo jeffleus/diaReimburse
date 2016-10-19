@@ -21,7 +21,22 @@ angular.module('starter.controllers')
         if (TripSvc.currentTrip.receipts && TripSvc.currentTrip.receipts.length > 0) {
             console.info('image dir: ' + TripSvc.currentTrip.receipts[0].image);
         }
-    });    
+        
+        var chain = $q.when();
+        TripSvc.currentTrip.receipts.forEach(function(r) {
+            chain = chain.then(_getImageUrl(TripSvc.currentTrip, r));
+        })
+        
+        return chain.then(function() {
+            console.log('receipts downloaded');
+        });
+    });
+    
+    function _getImageUrl(trip, item) {
+        return function() {
+            return item.getImageUrl(trip);  
+        };
+    }
     
     $scope.$on('$ionicView.leave', function() {
         console.log('Leave Receipts Ctrl...');
@@ -98,40 +113,42 @@ angular.module('starter.controllers')
             .then(function(fileEntry) {
                 return _getImageFile(fileEntry);
             }).then(function(file) {
-//                blob = file;
-//                blob.type = 'image/jpeg';
+                console.info('Receipt Image Taken');
+                console.log('filename: ' + file.name);
                 imageId = 'rcpt_' + moment().format('YYYYMMDD.hhmmss.SSS');
                 imageFile = file.name;
                 
-                return Pouch.db.putAttachment(TripSvc.currentTrip._id, file.name, TripSvc.currentTrip._rev, file, 'image/jpeg');
-//                return Pouch.db.put({
-//                    _id: imageId,
-//                    _attachments: {
-//                        filename: {
-//                            type: 'image/jpeg',
-//                            data: file
-//                        }
-//                    }
-//                });
+                console.info('putAttachemnt: ' + TripSvc.currentTrip._id + ', ' + imageFile);
+                return Pouch.db.putAttachment(TripSvc.currentTrip._id, imageFile, TripSvc.currentTrip._rev, file, 'image/jpeg');
             });
         }).then(function(result) {
+            console.info('putAttachment result: ' + result);
+            TripSvc.currentTrip._rev = result.rev;
             return Pouch.db.getAttachment(TripSvc.currentTrip._id, imageFile).then(function(imgBlob) {
                 blob = imgBlob;
             });
+//        }).then(function() {
+//            //links up back to the initial response from getPic...
+//            return movePhoto(imgData, outputFile);
+//                
         }).then(function() {
-            //links up back to the initial response from getPic...
-            return movePhoto(imgData, outputFile);
-                
-        }).then(function(success) {
-            console.log('image moved: ' + success);
+            return Pouch.db.get(TripSvc.currentTrip._id, {attachments:true, revs_info:true}).then(function(result) {
+                console.log(result);
+                return;
+            });
+        }).then(function(result) {
+//            console.log('image moved: ' + success);
             //update the receipt object, and persist to tripSvc, receiptSvc, and imgSvc
             var r = new Receipt();
-            r.image = success.name;
+//            r.image = success.name;
+            r.trip_id = TripSvc.currentTrip._id;
+            r.attachmentId = imageFile;
             r.imageUrl = URL.createObjectURL(blob);
+            
             TripSvc.currentTrip.addReceipt(r);
             ReceiptSvc.currentReceipt = r;
-            ImageSvc.currentImage = r.image;
-            TripSvc.pause();
+//            ImageSvc.currentImage = r.image;
+//            TripSvc.pause();
             //navigate to the receipt viewer at the 'app.browse' route
             $state.go('app.browse');            
         })
