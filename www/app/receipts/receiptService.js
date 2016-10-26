@@ -47,13 +47,13 @@ angular.module('starter.services')
     
     Receipt.prototype.getImageUrl = function(t) {
         console.info('getAttachemnt: ' + t._id + ', ' + this.attachmentId);
-            TripSvc.currentTrip._rev = result.rev;
-            return Pouch.db.getAttachment(TripSvc.currentTrip._id, imageFile).then(function(imgBlob) {
-                blob = imgBlob;
-            });
+//            TripSvc.currentTrip._rev = result.rev;
+//            return Pouch.db.getAttachment(TripSvc.currentTrip._id, imageFile).then(function(imgBlob) {
+//                blob = imgBlob;
+//            });
         return Pouch.db.getAttachment(t._id, this.attachmentId)
             .then(function(imgBlob) {
-                self.imageUrl = URL.createObjectURL(imgBlob);
+                self.imageUrl = imgBlob;    //URL.createObjectURL(imgBlob);
                 return self.imageUrl;
             }).catch(function(err) {
                 console.error('Receipt_getImageUrl: ' + err);

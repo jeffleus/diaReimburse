@@ -83,7 +83,8 @@ angular.module('starter.services')
     }
     
     function _hydrateFromPouch() {
-        return Pouch.db.allDocs({include_docs:true}).then(function(result) {
+        return Pouch.db.allDocs({include_docs:true, attachments:true}).then(function(result) {
+            //Pouch.db.delete(self.trips[0]._id);
             return _hydrate(result);
         }).catch(function(err) {
             console.error(err);
@@ -177,19 +178,19 @@ angular.module('starter.services')
 //            });
 //        });
         
-        return Pouch.db.bulkDocs(self.trips).then(function(result) {
-            console.info('tripService.pause()');
-            return;
-        }).catch(function(err) {
-            console.error('ERR: tripService.pause()');
-            return;
-        });
+//        return Pouch.db.bulkDocs(self.trips).then(function(result) {
+//            console.info('tripService.pause()');
+//            return;
+//        }).catch(function(err) {
+//            console.error('ERR: tripService.pause()');
+//            return;
+//        });
     }
     
     return self;
 })
 
-.factory('Trip', function(AirfareExp, HotelExp, TransportationExp, MileageExp, MealExp
+.factory('Trip', function(Pouch, AirfareExp, HotelExp, TransportationExp, MileageExp, MealExp
                            , MiscExp, TravelDate, Receipt, Note) {
     var Trip = function(data) {
         var self = this;
@@ -282,6 +283,7 @@ angular.module('starter.services')
             }
         }
     }
+    Trip.prototype.save = _save;
     Trip.prototype.addExpense = _addExpense;
     Trip.prototype.deleteExpense = _deleteExpense;
     Trip.prototype.addTravelDate = _addTravelDate;
@@ -294,6 +296,85 @@ angular.module('starter.services')
     
     Trip.prototype.info = function() {
         console.log('Title: ' + this.title);
+    }
+    
+    function _save() {
+        var self = this;
+        return Pouch.db.put(self)
+            .then(function(result) {
+                return Pouch.db.get(self._id);
+            }).then(function(doc)  {
+                var data = doc;
+                if (data) {
+                    self._id = data._id;
+                    self._rev = data._rev;
+                    //this needs to be improved to do a deeper copy so expenses are objects w/ class methods
+                    //angular.extend(self, data);
+                    self.traveler = data['traveler'];
+                    self.travelerEmail = data['travelerEmail'];
+                    self.travelerDepartment = data['travelerDepartment'];
+                    self.title = data['title'];
+                    self.purpose = data['purpose'];
+                    self.destinations = data['destinations'];
+                    self.homeCity = data['homeCity'];
+                    self.vehicleUsed = data['vehicleUsed'];
+                    self.startDate = moment(data['startDate']).toDate();
+                    self.endDate = moment(data['endDate']).toDate();
+                    self.isSubmitted = data['isSubmitted'];
+                    if (data.expenses && data.expenses.length > 0) {
+                        var expenses = data.expenses;
+                        self.expenses = [];
+                        expenses.forEach(function(expenseData) {
+                            if (expenseData['expenseCategory'] === 'Airfare') {
+                                var expense = new AirfareExp(expenseData);
+                            }
+                            else if(expenseData['expenseCategory'] === 'Hotel') {
+                                var expense = new HotelExp(expenseData);                        
+                            }
+                            else if(expenseData['expenseCategory'] === 'Transportation') {
+                                var expense = new TransportationExp(expenseData);                        
+                            }
+                            else if(expenseData['expenseCategory'] === 'Mileage') {
+                                var expense = new MileageExp(expenseData);                        
+                            }
+                            else if(expenseData['expenseCategory'] === 'Meal') {
+                                var expense = new MealExp(expenseData);                        
+                            }
+                            else if(expenseData['expenseCategory'] === 'Misc') {
+                                var expense = new MiscExp(expenseData);                        
+                            }
+                            self.addExpense(expense);
+                        })
+                    }
+                    if (data.travelDates && data.travelDates.length > 0) {
+                        var dates = data.travelDates;
+                        self.travelDates = [];
+                        dates.forEach(function(d) {
+                            var travelDate = new TravelDate(d);
+                            self.addTravelDate(d);
+                        })
+                    }
+                    if (data.receipts && data.receipts.length > 0) {
+                        var receipts = data.receipts;
+                        self.receipts = [];
+                        receipts.forEach(function(r) {
+                            var rcpt = new Receipt(r);
+                            self.addReceipt(rcpt);
+                        })
+                    }
+                    if (data.notes && data.notes.length > 0) {
+                        var notes = data.notes;
+                        self.notes = [];
+                        notes.forEach(function(n) {
+                            var note = new Note(n);
+                            self.addNote(note);
+                        })
+                    }
+                }
+                return self;
+            }).catch(function(err) {
+                console.error(err);
+            })
     }
     
     function _addExpense(e) {
