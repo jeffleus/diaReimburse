@@ -189,14 +189,15 @@ angular.module('starter.services')
     return self;
 })
 
-.factory('Trip', function(AirfareExp, HotelExp, TransportationExp, MileageExp, MealExp
-                           , MiscExp, TravelDate, Receipt, Note) {
+.factory('Trip', function($log, AirfareExp, HotelExp, TransportationExp, MileageExp, MealExp
+                           , MiscExp, TravelDate, Receipt, Note, Pouch) {
     var Trip = function(data) {
         var self = this;
         //check the data param to check for a JSON object
         var isDataObject = (typeof data === "object") && (data !== null);
         
         this.id = -1;
+		this._id = moment().format('YYYYMMDD.hhmmss.SSS');
         //if data is not JSON, it is the string for the title
         this.title = (!!data && !isDataObject)?data:"";
         this.purpose = "";
@@ -211,8 +212,13 @@ angular.module('starter.services')
         this.endDate = new Date() + 1;
         this.travelDates = [];
         this.expenses = [];
+
+        this.receiptDocId = 'rcpts_' + this._id;
+        this.receiptRev = '0-0';
+        this.receiptIndex = 0;
         this.receipts = [];
-        this.notes = [];
+
+		this.notes = [];
         this.isSubmitted = false;
         //if data is JSON, then use extend to copy in all the values
         if (data && isDataObject) {
@@ -230,6 +236,9 @@ angular.module('starter.services')
             self.vehicleUsed = data['vehicleUsed'];
             self.startDate = moment(data['startDate']).toDate();
             self.endDate = moment(data['endDate']).toDate();
+            self.receiptIndex = data['receiptIndex'];
+            self.receiptDocId = data['receiptDocId'];
+            self.receiptRev = data['receiptRev'];
             self.isSubmitted = data['isSubmitted'];
             if (data.expenses && data.expenses.length > 0) {
                 var expenses = data.expenses;
@@ -269,7 +278,8 @@ angular.module('starter.services')
                 self.receipts = [];
                 receipts.forEach(function(r) {
                     var rcpt = new Receipt(r);
-                    self.addReceipt(rcpt);
+//                    self.addReceipt(rcpt);
+					self.receipts.push(rcpt);
                 })
             }
             if (data.notes && data.notes.length > 0) {
@@ -282,6 +292,7 @@ angular.module('starter.services')
             }
         }
     }
+	Trip.prototype.save = _save;
     Trip.prototype.addExpense = _addExpense;
     Trip.prototype.deleteExpense = _deleteExpense;
     Trip.prototype.addTravelDate = _addTravelDate;
@@ -296,6 +307,12 @@ angular.module('starter.services')
         console.log('Title: ' + this.title);
     }
     
+	function _save() {
+		return Pouch.db.put(this).then(function(result) {
+			console.info('Trip.saved: ' + result);
+		});
+	}
+	
     function _addExpense(e) {
         this.expenses.push(e);
     }
@@ -334,19 +351,87 @@ angular.module('starter.services')
         }
     };
 
-	function _addReceipt(r) {
-		this.receipts.push(r);
+	function _addReceipt(r, file) {
+		var self = this;
+		r.attachId = 'receipt_' + (++self.receiptIndex) + '.jpg';
+		var receiptResult = {};
+		return _saveAttachment.call( self, r.attachId, file )
+			.then(function(result){
+				self.receiptIndex++;
+				self.receiptRev = result.receiptRev;
+				self.receipts.push(r);
+				receiptResult.imageUrl = result.imageUrl;
+				return Pouch.db.put(self);
+			}).then(function(result) {
+				self._rev = result.rev;
+				return receiptResult.imageUrl; 
+			}).catch(function(err) {
+				self.receiptIndex--;
+				$log.error(err);
+			});
+		
+//		return Pouch.db.putAttachment(this._id, imageFile, this._rev, r.imageUrl, 'image/jpeg')
+//		.then(function(result) {
+//			return Pouch.db.get(this._id, {rev:result.rev, attachments:true});
+//		}).then(function(tripWithAttachments) {
+//			this._rev = tripWithAttachments._rev;
+//			this._attachments = tripWithAttachments._attachments;
+//			this.receipts.push(r);
+//			return this.save();
+//		}).catch(function(err) {
+//			console.error(err);
+//		});
+	}
+        
+	function _saveAttachment(attachId, file) {
+		//grab the docId for receipt master doc from this trip object
+		var docId = this.receiptDocId;
+		//setup the latest document revision nunmber if not new
+		var attachmentResult = {};
+		var rev = (this.receiptRev!=="0-0")?this.receiptRev:undefined;
+		//put the image file in the receipt master doc
+		return Pouch.db.putAttachment(docId, attachId, rev, file, 'image/jpeg')
+			.then(function (result) {
+				//log the result and update the trip to hold the latest revision for the master doc
+				$log.log(result);
+				attachmentResult.receiptRev = result.rev;
+				//then, grab the image file blob using getAttachment
+				return Pouch.db.getAttachment(docId, attachId);
+			}).then(function(blob) {
+				if (blob) {
+//                        $log.info(blob);
+//                        //set the imageUrl of the current image as an object URL for the blob data
+//                        ImageSvc.currentImage.imageUrl = URL.createObjectURL(blob);
+//                        $log.info(ImageSvc.currentImage.imageUrl);
+					attachmentResult.imageUrl = URL.createObjectURL(blob);
+					return attachmentResult;
+				}
+			}).catch(function (err) {
+				$log.log(err);
+			});            
 	}
     
     function _deleteReceipt(r) {
         console.log('Trip::deleteReceipt - ' + r);
         var index = this.receipts.indexOf(r);
         if (index >-1) {
-            this.receipts.splice(index,1);
+			_deleteAttachment.then(function(rev) {
+				this.receiptRev = rev;
+				this.receipts.splice(index,1);
+			});
         } else {
             console.log('receipt not found in trip object');
         }
-    };
+    }
+	
+	function _deleteAttachment(docId, attachId, rev) {
+		return Pouch.db.removeAttachment(docId, attachId, rev)
+			.then(function(result) {
+				return result.rev;
+			}).catch(function(err) {			
+				$log.error(err);
+			});
+	}
 
 	function _addNote(n) {
 		this.notes.push(n);

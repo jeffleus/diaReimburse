@@ -76,8 +76,24 @@ angular.module('starter.controllers')
 //        ImageSvc.currentImage = ImageSvc.images[$index];
         $state.go('app.browse');
     }
+	
+	function _takePicture(useLibrary) {
+		ImageSvc.takePicture(useLibrary)
+		.then(function(file) {
+            var r = new Receipt();
+            r.trip_id = TripSvc.currentTrip._id;
+            r.attachmentId = file.name;
+            r.imageUrl = file;
+            
+            ReceiptSvc.currentReceipt = r;
+            //navigate to the receipt viewer at the 'app.browse' route
+            $state.go('app.browse');            
+		}).catch(function(err) {
+			console.error(err);
+		});
+	}
     
-    function _takePicture(useLibrary) {
+    function _takePictureOLD(useLibrary) {
         var options = {
           quality: 80,
           destinationType: Camera.DestinationType.FILE_URI,
@@ -145,7 +161,7 @@ angular.module('starter.controllers')
             r.attachmentId = imageFile;
             r.imageUrl = URL.createObjectURL(blob);
             
-            TripSvc.currentTrip.addReceipt(r);
+//            TripSvc.currentTrip.addReceipt(r);
             ReceiptSvc.currentReceipt = r;
 //            ImageSvc.currentImage = r.image;
 //            TripSvc.pause();

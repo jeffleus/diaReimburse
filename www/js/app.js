@@ -74,11 +74,21 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.services', 'starter.co
     url: "/browse",
     views: {
       'menuContent': {
-        templateUrl: "templates/browse.html",
-        controller: "BrowseCtrl"
+        templateUrl: "app/receipts/receiptView.html",
+        controller: "ReceiptCtrl"
       }
     }
   })
+
+//  .state('app.browse', {
+//    url: "/browse",
+//    views: {
+//      'menuContent': {
+//        templateUrl: "templates/browse.html",
+//        controller: "BrowseCtrl"
+//      }
+//    }
+//  })
     .state('app.trips', {
       url: "/trips",
       views: {
