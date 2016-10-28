@@ -83,7 +83,8 @@ angular.module('starter.services')
     }
     
     function _hydrateFromPouch() {
-        return Pouch.db.allDocs({include_docs:true}).then(function(result) {
+        return Pouch.db.allDocs({include_docs:true, attachments:true}).then(function(result) {
+            //Pouch.db.delete(self.trips[0]._id);
             return _hydrate(result);
         }).catch(function(err) {
             console.error(err);
@@ -177,13 +178,13 @@ angular.module('starter.services')
 //            });
 //        });
         
-        return Pouch.db.bulkDocs(self.trips).then(function(result) {
-            console.info('tripService.pause()');
-            return;
-        }).catch(function(err) {
-            console.error('ERR: tripService.pause()');
-            return;
-        });
+//        return Pouch.db.bulkDocs(self.trips).then(function(result) {
+//            console.info('tripService.pause()');
+//            return;
+//        }).catch(function(err) {
+//            console.error('ERR: tripService.pause()');
+//            return;
+//        });
     }
     
     return self;

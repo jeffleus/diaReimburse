@@ -40,7 +40,7 @@ angular.module('starter.controllers')
     
     $scope.$on('$ionicView.leave', function() {
         console.log('Leave Receipts Ctrl...');
-        TripSvc.pause();
+//        TripSvc.pause();
     });    
     
     function _addReceiptSheet() {
@@ -156,21 +156,97 @@ angular.module('starter.controllers')
 //            console.log('image moved: ' + success);
             //update the receipt object, and persist to tripSvc, receiptSvc, and imgSvc
             var r = new Receipt();
-//            r.image = success.name;
+            r.image = ImageSvc.currentImage.imageFile.name;
             r.trip_id = TripSvc.currentTrip._id;
-            r.attachmentId = imageFile;
-            r.imageUrl = URL.createObjectURL(blob);
+            r.attachmentId = ImageSvc.currentImage.imageId;
+            r.imageId = ImageSvc.currentImage.imageId;
+            r.imageUrl = ImageSvc.currentImage.imageData;
             
 //            TripSvc.currentTrip.addReceipt(r);
             ReceiptSvc.currentReceipt = r;
-//            ImageSvc.currentImage = r.image;
-//            TripSvc.pause();
             //navigate to the receipt viewer at the 'app.browse' route
-            $state.go('app.browse');            
+                $state.go('app.browse'); 
+            } else {
+                console.error('There was a problem taking a picture!');
+            }
         })
-        .catch(function(error) {
-            console.error('_takePicture error: ' + error);
-        });        
+//        var options = {
+//          quality: 80,
+//          destinationType: Camera.DestinationType.FILE_URI,
+//          sourceType: (useLibrary==0)?Camera.PictureSourceType.CAMERA:Camera.PictureSourceType.PHOTOLIBRARY,
+//          allowEdit: false,
+//          encodingType: Camera.EncodingType.JPEG,
+//          targetWidth: 850,
+//          targetHeight: 1100,
+//          saveToPhotoAlbum: false
+//        };
+//        var outputFile = "";
+//        var imgData = "";
+//        var blob;
+//        var imageId;
+//        var imageFile = "";
+//        
+//        $cordovaFile.checkDir(cordova.file.documentsDirectory, '')
+//        .then(function(success) {
+//            console.log('checkDir directory found: ' + cordova.file.documentsDirectory);
+//            //create a reader and list direcotry contents
+//            return getMaxFilename(success);
+//        }).then(function(maxfile) {
+//            //pass the maxfile to the routine to increment maxfilename
+//            return incrementMaxFilename(maxfile);
+//        }).then(function(newFilename) {
+//            outputFile = newFilename;
+//            //now that a suitable filename is available, kickoff the picture takings (camera or library)
+//            return $cordovaCamera.getPicture(options);
+//        }).then(function(imageData) {
+//            //placeholder for now to allow passing thru the promise chain...
+//            imgData = imageData;
+//            return _getImageFileEntry(imageData)
+//            .then(function(fileEntry) {
+//                return _getImageFile(fileEntry);
+//            }).then(function(file) {
+//                console.info('Receipt Image Taken');
+//                console.log('filename: ' + file.name);
+//                imageId = 'rcpt_' + moment().format('YYYYMMDD.hhmmss.SSS');
+//                imageFile = file.name;
+//                
+//                console.info('putAttachemnt: ' + TripSvc.currentTrip._id + ', ' + imageFile);
+//                return Pouch.db.putAttachment(TripSvc.currentTrip._id, imageFile, TripSvc.currentTrip._rev, file, 'image/jpeg');
+//            });
+//        }).then(function(result) {
+//            console.info('putAttachment result: ' + result);
+//            TripSvc.currentTrip._rev = result.rev;
+//            return Pouch.db.getAttachment(TripSvc.currentTrip._id, imageFile).then(function(imgBlob) {
+//                blob = imgBlob;
+//            });
+////        }).then(function() {
+////            //links up back to the initial response from getPic...
+////            return movePhoto(imgData, outputFile);
+////                
+//        }).then(function() {
+//            return Pouch.db.get(TripSvc.currentTrip._id, {attachments:true, revs_info:true}).then(function(result) {
+//                console.log(result);
+//                return;
+//            });
+//        }).then(function(result) {
+////            console.log('image moved: ' + success);
+//            //update the receipt object, and persist to tripSvc, receiptSvc, and imgSvc
+//            var r = new Receipt();
+////            r.image = success.name;
+//            r.trip_id = TripSvc.currentTrip._id;
+//            r.attachmentId = imageFile;
+//            r.imageUrl = URL.createObjectURL(blob);
+//            
+//            TripSvc.currentTrip.addReceipt(r);
+//            ReceiptSvc.currentReceipt = r;
+////            ImageSvc.currentImage = r.image;
+////            TripSvc.pause();
+//            //navigate to the receipt viewer at the 'app.browse' route
+//            $state.go('app.browse');            
+//        })
+//        .catch(function(error) {
+//            console.error('_takePicture error: ' + error);
+//        });        
     }
     
     function _getImageFileEntry(fileUri) {        
