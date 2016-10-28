@@ -1,37 +1,39 @@
 angular.module('starter.services')
 
-.service('TripSvc', function($q, Trip, Pouch) {
+.service('TripSvc', function($q, $log, Trip, Pouch) {
     var self = this;    
     self.trips = [];
     self.currentTrip = {};
     self.addTrip = _addTrip;
+    self.saveTrip = _saveTrip;
     self.deleteTrip = _deleteTrip;
     self.resume = _resume;
     self.pause = _pause;
     
     function _addTrip(t) {
-        console.log('TripSvc::addTrip - ' + t.title);
+        $log.log('TripSvc::addTrip - ' + t.title);
         if (t.id == -1) t.id = self.trips.length;
         t._id = moment().format('YYYYMMDD.hhmmss.SSS');
         Pouch.db.put(t).then(function(result) {
             self.trips.push(t);
-            console.log(result);
+            $log.log(result);
         }).catch(function(err) {
-            console.log(err);
+            $log.log(err);
         });
     }
     
     function _deleteTrip(t) {
-        console.log('TripSvc::deleteTrip - ' + t.title);
+        $log.log('TripSvc::deleteTrip - ' + t.title);
         Pouch.db.remove(t._id, t._rev);
         var index = self.trips.indexOf(t);
         if (index >-1) {
             self.trips.splice(index,1);
         } else {
-            console.log('trip not found in tripSvc');
+            $log.log('trip not found in tripSvc');
         }
     }	
 	
+    //calls --> _hydrateFromPouch
 	function _migrateResume() {
         _hydrateFromPouch();
 //		//check for localStorage in the 'trips' key
@@ -82,15 +84,17 @@ angular.module('starter.services')
         }
     }
     
+    //get allDocs and hydrate from results
     function _hydrateFromPouch() {
-        return Pouch.db.allDocs({include_docs:true, attachments:true}).then(function(result) {
-            //Pouch.db.delete(self.trips[0]._id);
-            return _hydrate(result);
-        }).catch(function(err) {
-            console.error(err);
-        });
+        return Pouch.db.allDocs({include_docs:true, attachments:true})
+            .then(function(result) {
+                return _hydrate(result);
+            }).catch(function(err) {
+                $log.error(err);
+            });
     }
     
+    //calls --> _migrateResume
     function _resume() {
 //        if (Pouch && Pouch.db) {
 //			if (localStorage['trips']) {
@@ -109,7 +113,7 @@ angular.module('starter.services')
 //			return Pouch.db.allDocs({include_docs:true}).then(function(result) {
 //                _hydrate(result);
 //            }).catch(function(err) {
-//                console.error(err);
+//                $log.error(err);
 //            });
 //        }
         _migrateResume();
@@ -131,25 +135,29 @@ angular.module('starter.services')
             self.trips.length = 0;
             trips.forEach(function(tripData) {
                 //pass the trip JSON to the constrcutor of the Trip class
-                var trip = new Trip(tripData.doc);
-//                trip.id = tripData.doc._id;
-//                trip.rev = tripData.doc._rev
-                
-                //and add the trip to the collection in the service
-                self.trips.push(trip)
-                //_addTrip(trip);
+                if (tripData.doc.hasOwnProperty('traveler')) {
+                    //instantiate a Trip obj from the json doc
+                    var trip = new Trip(tripData.doc);
+                    //and add the trip to the collection in the service
+                    self.trips.push(trip);
+                    $log.info('Trip hydrated: ' + trip._id);
+                    return true;
+                } else { 
+                    $log.info('This is not a trip doc: ' + tripData.doc._id); 
+                    return false;
+                }
             })
-        }
+        } { return false;}
     }
     
     function _saveTrip(t) {
-        t.receipts.forEach(function(r) {
-            delete r.imageUrl;
-        })
-        
+//        t.receipts.forEach(function(r) {
+//            delete r.imageUrl;
+//        })
         return Pouch.db.put(t).then(function(result) {
-            console.info('trip saved to db');
-            console.log(result);
+            t._rev = result.rev;
+            $log.info('TripSvc_saveTrip: (id:' + t._id + ', rev:' + t._rev + ')');
+            return result.rev;
         });
     }    
     
@@ -170,7 +178,7 @@ angular.module('starter.services')
 //        })
 //        
 //        return chain.then(function() {
-//            console.log('trips saved to database');
+//            $log.log('trips saved to database');
 //        });
 //        self.trips.forEach(function(t) {
 //            t.receipts.forEach(function(r) {
@@ -179,10 +187,10 @@ angular.module('starter.services')
 //        });
         
 //        return Pouch.db.bulkDocs(self.trips).then(function(result) {
-//            console.info('tripService.pause()');
+//            $log.info('tripService.pause()');
 //            return;
 //        }).catch(function(err) {
-//            console.error('ERR: tripService.pause()');
+//            $log.error('ERR: tripService.pause()');
 //            return;
 //        });
     }
@@ -305,12 +313,12 @@ angular.module('starter.services')
     Trip.prototype.totalExpenses = _totalExpenses;
     
     Trip.prototype.info = function() {
-        console.log('Title: ' + this.title);
+        $log.log('Title: ' + this.title);
     }
     
 	function _save() {
 		return Pouch.db.put(this).then(function(result) {
-			console.info('Trip.saved: ' + result);
+			$log.info('Trip.saved: ' + result);
 		});
 	}
 	
@@ -319,12 +327,12 @@ angular.module('starter.services')
     }
     
     function _deleteExpense(e) {
-        console.log('Trip::deleteExpense - ' + e);
+        $log.log('Trip::deleteExpense - ' + e);
         var index = this.expenses.indexOf(e);
         if (index >-1) {
             this.expenses.splice(index,1);
         } else {
-            console.log('expense not found in trip object');
+            $log.log('expense not found in trip object');
         }
     };
     
@@ -343,12 +351,12 @@ angular.module('starter.services')
 	}
     
     function _deleteTravelDate(d) {
-        console.log('Trip::deleteTravelDate - ' + d);
+        $log.log('Trip::deleteTravelDate - ' + d);
         var index = this.travelDates.indexOf(d);
         if (index >-1) {
             this.travelDates.splice(index,1);
         } else {
-            console.log('travelDate not found in trip object');
+            $log.log('travelDate not found in trip object');
         }
     };
 
@@ -380,7 +388,7 @@ angular.module('starter.services')
 //			this.receipts.push(r);
 //			return this.save();
 //		}).catch(function(err) {
-//			console.error(err);
+//			$log.error(err);
 //		});
 	}
         
@@ -413,7 +421,7 @@ angular.module('starter.services')
 	}
     
     function _deleteReceipt(r) {
-        console.log('Trip::deleteReceipt - ' + r);
+        $log.log('Trip::deleteReceipt - ' + r);
         var index = this.receipts.indexOf(r);
         if (index >-1) {
 			_deleteAttachment.then(function(rev) {
@@ -421,7 +429,7 @@ angular.module('starter.services')
 				this.receipts.splice(index,1);
 			});
         } else {
-            console.log('receipt not found in trip object');
+            $log.log('receipt not found in trip object');
         }
     }
 	
@@ -439,18 +447,17 @@ angular.module('starter.services')
 	}
     
     function _deleteNote(n) {
-        console.log('Trip::deleteNote - ' + n);
+        $log.log('Trip::deleteNote - ' + n);
         var index = this.notes.indexOf(n);
         if (index >-1) {
             this.notes.splice(index,1);
         } else {
-            console.log('note not found in trip object');
+            $log.log('note not found in trip object');
         }
     };
 
     return Trip;
 })
-
 
 .factory('TravelDate', function() {
     var TravelDate = function(data) {

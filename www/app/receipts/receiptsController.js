@@ -83,9 +83,10 @@ angular.module('starter.controllers')
             var r = new Receipt();
             r.trip_id = TripSvc.currentTrip._id;
             r.attachmentId = file.name;
-            r.imageUrl = file;
-            
-            ReceiptSvc.currentReceipt = r;
+            r.imageUrl = ImageSvc.currentImage.imageData;
+
+            //ImageSvc.currentImage.imageData = file;
+            ReceiptSvc.currentReceipt = r;            
             //navigate to the receipt viewer at the 'app.browse' route
             $state.go('app.browse');            
 		}).catch(function(err) {
@@ -147,11 +148,14 @@ angular.module('starter.controllers')
 //            //links up back to the initial response from getPic...
 //            return movePhoto(imgData, outputFile);
 //                
+        
+        
         }).then(function() {
             return Pouch.db.get(TripSvc.currentTrip._id, {attachments:true, revs_info:true}).then(function(result) {
                 console.log(result);
                 return;
             });
+        
         }).then(function(result) {
 //            console.log('image moved: ' + success);
             //update the receipt object, and persist to tripSvc, receiptSvc, and imgSvc
@@ -165,11 +169,10 @@ angular.module('starter.controllers')
 //            TripSvc.currentTrip.addReceipt(r);
             ReceiptSvc.currentReceipt = r;
             //navigate to the receipt viewer at the 'app.browse' route
-                $state.go('app.browse'); 
-            } else {
-                console.error('There was a problem taking a picture!');
-            }
-        })
+                $state.go('app.browse');
+        }).catch(function(err){
+            console.error('There was a problem taking a picture!');
+        });
 //        var options = {
 //          quality: 80,
 //          destinationType: Camera.DestinationType.FILE_URI,

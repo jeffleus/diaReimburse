@@ -1,18 +1,34 @@
 angular.module('starter.controllers')
 
-.controller('HomeCtrl', function($scope, $rootScope, $timeout, $ionicPopup, $state
+.controller('HomeCtrl', function($scope, $rootScope, $log, $timeout, $ionicPopup, $state
                                      , $cordovaEmailComposer, ReportSvc, EmailSvc, TripSvc) {
     $scope.data = {};
+    $scope.forms = {};
     $scope.tripSvc = TripSvc;
     $scope.addDestination = _toggleSubmitted;
     $scope.sendTrip = _sendTrip;
     $scope.gotoTrips = _gotoTrips;
     
-    $rootScope.$on('$stateChangeSuccess', _save);
+    $rootScope.$on('$stateChangeSuccess', function() {
+        var isDirty = $scope.forms.tripForm.$dirty;
+        if (isDirty) { 
+            _save().then(function(isSaved) {
+                $scope.forms.tripForm.$setPristine();
+            }); 
+        }
+    });
     
     function _save() {
-        console.log('HomeCtrl: saving tripSvc state to localStorage');
-        TripSvc.pause();
+//        console.log('HomeCtrl: saving tripSvc state to localStorage');
+//        TripSvc.pause();
+        return TripSvc.saveTrip(TripSvc.currentTrip)
+        .then(function(result) {
+            $log.info('Trip save: ' + result);
+            return true;
+        }).catch(function(err) {
+            $log.error(err);
+            return false;
+        });
     }
 	
     function _toggleSubmitted() {

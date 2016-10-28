@@ -73,17 +73,22 @@ angular.module('starter.controllers', ['ngCookies', 'ionic-timepicker'])
     }
     
     function _saveReceipt() {
-        TripSvc.currentTrip.receipts.push(ReceiptSvc.currentReceipt);
-        TripSvc.currentTrip.receiptIndex = 1;
-        //need to actually check key to see if already persent...
-        if (!TripSvc.currentTrip._attachments) { TripSvc.currentTrip._attachments = {}; }
-        TripSvc.currentTrip._attachments[ReceiptSvc.currentReceipt.imageId] = {
-            content_type: 'image/jpeg',
-            data: ImageSvc.currentImage.imageFile
-        };
-        TripSvc.currentTrip.save().then(function(t) {
-            console.log(t);
-        });
+        return TripSvc.currentTrip.addReceipt(r, file)
+            .then(function(imgUrl) {
+                $state.go('app.single.receipts', {'playlistId':TripSvc.currentTrip.id});
+            });
+
+//        TripSvc.currentTrip.receipts.push(ReceiptSvc.currentReceipt);
+//        TripSvc.currentTrip.receiptIndex = 1;
+//        //need to actually check key to see if already persent...
+//        if (!TripSvc.currentTrip._attachments) { TripSvc.currentTrip._attachments = {}; }
+//        TripSvc.currentTrip._attachments[ReceiptSvc.currentReceipt.imageId] = {
+//            content_type: 'image/jpeg',
+//            data: ImageSvc.currentImage.imageFile
+//        };
+//        TripSvc.currentTrip.save().then(function(t) {
+//            console.log(t);
+//        });
     }
     
     $scope.zoomLevel = function() {

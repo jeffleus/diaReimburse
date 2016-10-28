@@ -47,21 +47,23 @@ angular.module('starter.services')
 //
 // on hold while integrating logic from prototype
 //	
-//    Receipt.prototype.getImageUrl = function(t) {
-//        console.info('getAttachemnt: ' + t._id + ', ' + this.attachmentId);
-//		Pouch.db.get(t._id, {attachments:true}).then(function(result) {
-//			console.info(result);
-//		});
-//		
-//        return Pouch.db.getAttachment(t._id, this.attachmentId)
-//            .then(function(imgBlob) {
-//                self.imageUrl = URL.createObjectURL(imgBlob);
-//                return self.imageUrl;
-//            }).catch(function(err) {
-//                console.error('Receipt_getImageUrl: ' + err);
-//                return;
-//            });        
-//    }
+    Receipt.prototype.getImageUrl = function(t) {
+        var self = this;
+        console.info('getAttachemnt: ' + t._id + ', ' + self.attachId);
+//		Pouch.db.getAttachment(t.receiptDocId, r.attachId)
+//            .then(function(result) {
+//                console.info(result);
+//            });
+		
+        return Pouch.db.getAttachment(t.receiptDocId, self.attachId)
+            .then(function(imgBlob) {
+                self.imageUrl = URL.createObjectURL(imgBlob);
+                return self.imageUrl;
+            }).catch(function(err) {
+                console.error('Receipt_getImageUrl: ' + err);
+                return;
+            });        
+    }
 
     return Receipt;
 });

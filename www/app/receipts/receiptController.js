@@ -29,8 +29,12 @@ angular.module('starter.controllers')
 	});
     
     function _gotoReceipts(t) {
-        TripSvc.pause();
-        $state.go('app.single.receipts', {'playlistId':TripSvc.currentTrip.id});
+//        TripSvc.pause();
+//        $state.go('app.single.receipts', {'playlistId':TripSvc.currentTrip.id});
+        return TripSvc.currentTrip.addReceipt(ReceiptSvc.currentReceipt, ImageSvc.currentImage.imageFile)
+            .then(function(imgUrl) {
+                $state.go('app.single.receipts', {'playlistId':TripSvc.currentTrip.id});
+            });
     }
     
     $scope.zoomLevel = function() {
@@ -46,10 +50,14 @@ angular.module('starter.controllers')
     };
     
     function _saveReceipt() {
-		TripSvc.currentTrip.addReceipt(ReceiptSvc.currentReceipt)
-			.then(function() {
-				$state.go('app.single.receipts', {'playlistId':TripSvc.currentTrip.id});
-			});
+        return TripSvc.currentTrip.addReceipt(ReceiptSvc.currentReceipt, ImageSvc.currentImage.imageFile)
+            .then(function(imgUrl) {
+                $state.go('app.single.receipts', {'playlistId':TripSvc.currentTrip.id});
+            });
+//		TripSvc.currentTrip.addReceipt(ReceiptSvc.currentReceipt)
+//			.then(function() {
+//				$state.go('app.single.receipts', {'playlistId':TripSvc.currentTrip.id});
+//			});
     }
     
     function _cancelReceipt() {
