@@ -23,7 +23,6 @@ angular.module('starter.services')
             self.date = moment(data['date']).toDate();
             //picked up once saved to the pouchdb w/ an attachment
             self.attachId = data['attachId'];
-//			self.imageUrl = data.imageUrl;
 
 //            Receipt.defineProperty(this, "imageUrl", {
 //                get: function() {
@@ -44,17 +43,9 @@ angular.module('starter.services')
         }
     }    
 
-//
-// on hold while integrating logic from prototype
-//	
     Receipt.prototype.getImageUrl = function(t) {
         var self = this;
         console.info('getAttachemnt: ' + t._id + ', ' + self.attachId);
-//		Pouch.db.getAttachment(t.receiptDocId, r.attachId)
-//            .then(function(result) {
-//                console.info(result);
-//            });
-		
         return Pouch.db.getAttachment(t.receiptDocId, self.attachId)
             .then(function(imgBlob) {
                 self.imageUrl = URL.createObjectURL(imgBlob);

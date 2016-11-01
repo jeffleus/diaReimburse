@@ -151,12 +151,10 @@ angular.module('starter.services')
     }
     
     function _saveTrip(t) {
-//        t.receipts.forEach(function(r) {
-//            delete r.imageUrl;
-//        })
+        $log.info('TripSvc_saveTrip BEGIN: ' + t._rev);
         return Pouch.db.put(t).then(function(result) {
+			$log.info('TripSvc_saveTrip END: ' + result.rev);
             t._rev = result.rev;
-            $log.info('TripSvc_saveTrip: (id:' + t._id + ', rev:' + t._rev + ')');
             return result.rev;
         });
     }    
@@ -317,8 +315,10 @@ angular.module('starter.services')
     }
     
 	function _save() {
-		return Pouch.db.put(this).then(function(result) {
-			$log.info('Trip.saved: ' + result);
+        var self = this;
+		return Pouch.db.put(self).then(function(result) {
+			$log.info('Trip.saved: ' + self._rev + ' --> ' + result);
+            self._rev = result.rev;
 		});
 	}
 	
@@ -331,6 +331,8 @@ angular.module('starter.services')
         var index = this.expenses.indexOf(e);
         if (index >-1) {
             this.expenses.splice(index,1);
+            //added to make sure trip is persisted after update from delete
+            this.save();
         } else {
             $log.log('expense not found in trip object');
         }
@@ -364,32 +366,25 @@ angular.module('starter.services')
 		var self = this;
 		r.attachId = 'receipt_' + (++self.receiptIndex) + '.jpg';
 		var receiptResult = {};
+        //start by saving the image file as an attachment using call to set context
 		return _saveAttachment.call( self, r.attachId, file )
 			.then(function(result){
+                //on success, increment the index, update the trip doc revision
 				self.receiptIndex++;
 				self.receiptRev = result.receiptRev;
+                //then add the receipt to the receipts [] and save the trip doc
 				self.receipts.push(r);
 				receiptResult.imageUrl = result.imageUrl;
 				return Pouch.db.put(self);
 			}).then(function(result) {
+                //update the trip doc to use the new rev after saving w/ new receipt
 				self._rev = result.rev;
 				return receiptResult.imageUrl; 
 			}).catch(function(err) {
+                //rollback the receiptIndex if there is a problem
 				self.receiptIndex--;
 				$log.error(err);
 			});
-		
-//		return Pouch.db.putAttachment(this._id, imageFile, this._rev, r.imageUrl, 'image/jpeg')
-//		.then(function(result) {
-//			return Pouch.db.get(this._id, {rev:result.rev, attachments:true});
-//		}).then(function(tripWithAttachments) {
-//			this._rev = tripWithAttachments._rev;
-//			this._attachments = tripWithAttachments._attachments;
-//			this.receipts.push(r);
-//			return this.save();
-//		}).catch(function(err) {
-//			$log.error(err);
-//		});
 	}
         
 	function _saveAttachment(attachId, file) {
@@ -408,15 +403,12 @@ angular.module('starter.services')
 				return Pouch.db.getAttachment(docId, attachId);
 			}).then(function(blob) {
 				if (blob) {
-//                        $log.info(blob);
-//                        //set the imageUrl of the current image as an object URL for the blob data
-//                        ImageSvc.currentImage.imageUrl = URL.createObjectURL(blob);
-//                        $log.info(ImageSvc.currentImage.imageUrl);
+                    //convert the blob to an object URL and attach to function result
 					attachmentResult.imageUrl = URL.createObjectURL(blob);
 					return attachmentResult;
-				}
+				} else { throw new Error('The attachment did not return a blob during save.'); }
 			}).catch(function (err) {
-				$log.log(err);
+				$log.error(err);
 			});            
 	}
     

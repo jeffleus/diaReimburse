@@ -46,64 +46,6 @@ angular.module('starter.controllers', ['ngCookies', 'ionic-timepicker'])
 //  };
 })
 
-.controller('BrowseCtrl', function($scope, $state, $ionicScrollDelegate, $timeout
-                                    , TripSvc, ImageSvc, ReceiptSvc) {
-    (document.getElementById('page')).style.width = (screen.width) + "px";
-    $scope.tripSvc = TripSvc;
-    $scope.receiptSvc = ReceiptSvc;
-    $scope.imageSvc = ImageSvc;
-    $scope.gotoReceipts = _gotoReceipts;
-    $scope.docFolder = cordova.file.documentsDirectory;
-    $scope.saveReceipt = _saveReceipt;
-    
-    $scope.$on('$ionicView.beforeEnter', function() {
-        //timeout addresses issue where delegate could not find elem because compile not complete
-        $timeout(function() {
-            $ionicScrollDelegate.$getByHandle('inner').zoomTo(6);
-            $ionicScrollDelegate.$getByHandle('inner').zoomBy(0.4);
-            $ionicScrollDelegate.$getByHandle('inner').zoomTo(0.5);
-        }, 250);
-    });
-
-    $scope.$on('$ionicView.leave', function() { console.log('BrowseCtrl: saving tripSvc data to localStorage on leave'); TripSvc.pause(); });
-    
-    function _gotoReceipts(t) {
-        TripSvc.pause();
-        $state.go('app.single.receipts', {'playlistId':TripSvc.currentTrip.id});
-    }
-    
-    function _saveReceipt() {
-        return TripSvc.currentTrip.addReceipt(r, file)
-            .then(function(imgUrl) {
-                $state.go('app.single.receipts', {'playlistId':TripSvc.currentTrip.id});
-            });
-
-//        TripSvc.currentTrip.receipts.push(ReceiptSvc.currentReceipt);
-//        TripSvc.currentTrip.receiptIndex = 1;
-//        //need to actually check key to see if already persent...
-//        if (!TripSvc.currentTrip._attachments) { TripSvc.currentTrip._attachments = {}; }
-//        TripSvc.currentTrip._attachments[ReceiptSvc.currentReceipt.imageId] = {
-//            content_type: 'image/jpeg',
-//            data: ImageSvc.currentImage.imageFile
-//        };
-//        TripSvc.currentTrip.save().then(function(t) {
-//            console.log(t);
-//        });
-    }
-    
-    $scope.zoomLevel = function() {
-        var view = $ionicScrollDelegate.$getByHandle('inner').getScrollView();
-        return view.__zoomLevel;
-    }
-    $scope.zoomIn = function() {
-        $ionicScrollDelegate.$getByHandle('inner').zoomBy(2);
-    };
-    
-    $scope.zoomOut = function() {
-        $ionicScrollDelegate.$getByHandle('inner').zoomBy(0.5);
-    };
-})
-
 .controller('PlaylistsCtrl', function($scope, $http, $cookies, $ionicPopup, $ionicModal, TokenSvc, AuthSvc, TripSvc, Trip) {
   $scope.playlists = [
     { title: 'Oregon', id: 1, startDate: '1/15/15', endDate: '1/19/15' },

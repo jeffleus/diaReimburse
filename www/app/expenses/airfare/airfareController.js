@@ -1,31 +1,47 @@
 angular.module('starter.controllers')
 
-.controller('AirfareCtrl', function($scope, AirfareExp, TripSvc) {
-    
-    console.log('Airfare Controller...');
-//    $scope.newAirfare = new AirfareExp();
+.controller('AirfareCtrl', function($scope, $log, AirfareExp, TripSvc) {    
+    //controller state object to connect to form object in the view
+    $scope.vm = {};
     $scope.$on('modal.shown', function() {
+        $log.log('Airfare Controller...');
         if (!$scope.newAirfare) {
             $scope.newAirfare = new AirfareExp();
+        } else {
+            //grab reference to the original hotel and make a copy to work on
+            $scope.original = $scope.newAirfare;
+            $scope.newAirfare = angular.copy($scope.original);
         }
     });
 
     $scope.saveNew = function() {
-        console.log('ExpensesCtrl: save new expense');
-//        AirfareSvc.addAirfare($scope.newAirfare);
-        if ($scope.isNewExpense) {
-            TripSvc.currentTrip.addExpense($scope.newAirfare);
+        //dirty check the airfare form before trying to save the expense
+        var isDirty = $scope.vm.airfareForm.$dirty;
+        if (isDirty) {
+            $log.log('ExpensesCtrl: save Airfare expense');
+            //check for new addExpense, or existing updateExpense
+            if ($scope.isNewExpense) {
+                TripSvc.currentTrip.addExpense($scope.newAirfare);
+            } else {
+                //lookup the original expense in the trip [] of expenses
+                var index = TripSvc.currentTrip.expenses.indexOf($scope.original);
+                if (index > -1) {
+                    //replace the original expense w/ newHotel
+                    TripSvc.currentTrip.expenses[index] = $scope.newAirfare;
+                }
+            }
+            //TripSvc.pause();
+            TripSvc.currentTrip.save();
         }
-        TripSvc.pause();
-        $scope.modal.hide();			
+        $scope.modal.hide();
     };
     
     $scope.saveAirfare = function() {        
-        console.log('save updates to expense: ' + $scope.newAirfare);
+        $log.log('save updates to expense: ' + $scope.newAirfare);
     };
     
     $scope.addReceipt = function() {
-        console.log('add a receipt for this expense: ' + $scope.newAirfare);
+        $log.log('add a receipt for this expense: ' + $scope.newAirfare);
     };
 
 });
