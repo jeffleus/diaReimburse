@@ -2,25 +2,24 @@ angular.module('starter.controllers')
 
 .controller('HomeCtrl', function($scope, $rootScope, $log, $timeout, $ionicPopup, $state
                                      , $cordovaEmailComposer, ReportSvc, EmailSvc, TripSvc) {
-    $scope.data = {};
-    $scope.forms = {};
+    $scope.vm = {};
     $scope.tripSvc = TripSvc;
     $scope.addDestination = _toggleSubmitted;
     $scope.sendTrip = _sendTrip;
     $scope.gotoTrips = _gotoTrips;
     
     $rootScope.$on('$stateChangeSuccess', function() {
-        var isDirty = $scope.forms.tripForm.$dirty;
+        var isDirty = $scope.vm.tripForm.$dirty;
         if (isDirty) { 
             _save().then(function(isSaved) {
-                $scope.forms.tripForm.$setPristine();
+                //reset the form to pristine after a successful save
+                $scope.vm.tripForm.$setPristine();
             }); 
         }
     });
     
     function _save() {
-//        console.log('HomeCtrl: saving tripSvc state to localStorage');
-//        TripSvc.pause();
+        //use the trip service to save the current trip to database
         return TripSvc.saveTrip(TripSvc.currentTrip)
         .then(function(result) {
             $log.info('Trip save: ' + result);
@@ -57,10 +56,9 @@ angular.module('starter.controllers')
     };
   
     function _addDestination() {
-        $scope.data = {};        
         // An elaborate, custom popup
         var myPopup = $ionicPopup.show({
-            template: '<input type="text" ng-model="data.destination">',
+            template: '<input type="text" ng-model="vm.destination">',
             title: 'Enter Wi-Fi Password',
             subTitle: 'Please use normal things',
             scope: $scope,
@@ -69,11 +67,11 @@ angular.module('starter.controllers')
                 { text: '<b>Save</b>',
                 type: 'button-positive',
                 onTap: function(e) {
-                    if (!$scope.data.destination) {
+                    if (!$scope.vm.destination) {
                     //don't allow the user to close unless he enters wifi password
                     e.preventDefault();
                 } else {
-                    return $scope.data.destination;
+                    return $scope.vm.destination;
                 }}
             }]
         });

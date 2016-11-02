@@ -1,6 +1,7 @@
 angular.module('starter.controllers')
 
-.controller('DatesCtrl', function($scope, $ionicModal, $cordovaDatePicker, TravelDate, TripSvc) {
+.controller('DatesCtrl', function($scope, $log, $ionicModal, $cordovaDatePicker, TravelDate, TripSvc) {
+    $scope.vm = {};
     // use tripSvc to access currentTrip and collection of travel dates
 	$scope.tripSvc = TripSvc;
 //PUBLIC METHODS
@@ -10,10 +11,10 @@ angular.module('starter.controllers')
     $scope.deleteTravelDate = _deleteTravelDate;
     $scope.closeModal = _closeModal;
     //log the controller instantiation
-    console.log('DatesCtrl Controller... ');
-				           
+    $log.log('DatesCtrl Controller... ');
+
     function _saveTravelDate() {
-        console.log('DatesCtrl: save new travel date');
+        $log.log('DatesCtrl: save new travel date');
         if ($scope.isNewTravelDate) {
             TripSvc.currentTrip.addTravelDate($scope.newTravelDate);
         }
