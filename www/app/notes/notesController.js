@@ -1,21 +1,58 @@
 angular.module('starter.controllers')
 
-.controller('NotesCtrl', function($scope, $ionicModal, $cordovaDatePicker
+.controller('NotesCtrl', function($scope, $log, $ionicModal, $cordovaDatePicker
                                    , TripSvc, NotesSvc, Note) {
-    $scope.tripSvc = TripSvc;
+	$scope.vm = {};
+	$scope.tripSvc = TripSvc;
     $scope.noteSvc = NotesSvc;
 
-    $scope.addNote = _loadNotesModal;
+    $scope.saveNote = _saveNote;
     $scope.closeModal = _closeModal;
     $scope.editNote = _editNote;
     $scope.addNote = _addNote;
     $scope.deleteNote = _deleteNote;
 
     $scope.newNote = null;
+	
+    $scope.$on('modal.shown', function() {
+		$log.log('NotesCtrl Controller... ');
+        if (!$scope.newNote) {
+            //init a new Note() when adding a new travel note
+            $scope.newNote = new Note();
+        } else {
+            //grab reference to the original Note and make a copy to work on
+            $scope.original = $scope.newNote;
+            $scope.newNote = angular.copy($scope.original);
+        }
+    });
+
+	function _saveNote() {
+        //dirty check the noteForm before trying to save the TravelNote
+        var isDirty = $scope.vm.noteForm.$dirty;
+        if (isDirty) {
+            //check for new addTravelNote, or existing updateTravelNote
+            if ($scope.isNewTravelNote) {
+				$log.log('NotesCtrl: save new travel note');
+                TripSvc.currentTrip.addNote($scope.newNote);
+            } else {
+                //lookup the original TravelDate in the trips travelDates[]
+                var index = TripSvc.currentTrip.notes.indexOf($scope.original);
+                if (index > -1) {
+					$log.log('NotesCtrl: save updated travel note');
+                    //replace the original travelDates w/ newTravelDate
+                    TripSvc.currentTrip.notes[index] = $scope.newNote;
+                }
+            }
+            //save the record before closing
+            TripSvc.currentTrip.save();
+        }
+        $scope.modal.hide();			
+    };
 
     function _addNote() {
         var n = new Note();
-        TripSvc.currentTrip.addNote(n);
+		$scope.isNewTravelNote = true;
+        //TripSvc.currentTrip.addNote(n);
         _editNote(n);
     }
     
@@ -26,12 +63,10 @@ angular.module('starter.controllers')
     
     function _deleteNote(n) {
         TripSvc.currentTrip.deleteNote(n);
-        TripSvc.pause();
     }
     
     function _closeModal() {
         $scope.modal.hide();
-        TripSvc.pause();
     }
     
 	function _loadNotesModal() {

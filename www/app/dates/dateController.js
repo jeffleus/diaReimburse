@@ -10,21 +10,43 @@ angular.module('starter.controllers')
     $scope.saveNew = _saveTravelDate;
     $scope.deleteTravelDate = _deleteTravelDate;
     $scope.closeModal = _closeModal;
-    //log the controller instantiation
-    $log.log('DatesCtrl Controller... ');
-
-    function _saveTravelDate() {
-        $log.log('DatesCtrl: save new travel date');
-        if ($scope.isNewTravelDate) {
-            TripSvc.currentTrip.addTravelDate($scope.newTravelDate);
+	
+    $scope.$on('modal.shown', function() {
+		$log.log('DatesCtrl Controller... ');
+        if (!$scope.newTravelDate) {
+            //init a new HotelExp when adding a new hotel Expense
+            $scope.newTravelDate = new TravelDate();
+        } else {
+            //grab reference to the original hotel and make a copy to work on
+            $scope.original = $scope.newTravelDate;
+            $scope.newTravelDate = angular.copy($scope.original);
         }
-        TripSvc.pause();
+    });
+
+	function _saveTravelDate() {
+        //dirty check the travelDate form before trying to save the TravelDate
+        var isDirty = $scope.vm.dateForm.$dirty;
+        if (isDirty) {
+            $log.log('DatesCtrl: save new travel date');
+            //check for new addTravelDate, or existing updateTravelDate
+            if ($scope.isNewTravelDate) {
+                TripSvc.currentTrip.addTravelDate($scope.newTravelDate);
+            } else {
+                //lookup the original TravelDate in the trips travelDates[]
+                var index = TripSvc.currentTrip.travelDates.indexOf($scope.original);
+                if (index > -1) {
+                    //replace the original travelDates w/ newTravelDate
+                    TripSvc.currentTrip.travelDates[index] = $scope.newTravelDate;
+                }
+            }
+            //save the record before closing
+            TripSvc.currentTrip.save();
+        }
         $scope.modal.hide();			
     };
     
     function _deleteTravelDate(d) {
         TripSvc.currentTrip.deleteTravelDate(d);
-        TripSvc.pause();
     }
 
     function _showTravelDateModal(d) {
@@ -54,12 +76,6 @@ angular.module('starter.controllers')
 		$scope.newTravelDate = null;
 		$scope.modal.hide();
 	};
-//MODAL EVENTS
-    $scope.$on('modal.shown', function() {
-        if (!$scope.newTravelDate) {
-            $scope.newTravelDate = new TravelDate();
-        }
-    });
 	//Cleanup the modal when we're done with it!
 	$scope.$on('$destroy', function() {
 		$scope.modal.remove();

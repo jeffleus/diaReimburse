@@ -2,7 +2,7 @@ angular.module('starter.services')
 
 .service('NotesSvc', function() {
     var self = this;
-    self.currentReceipt = [];
+    self.currentNote = {};
 })
 
 .factory('Note', function() {

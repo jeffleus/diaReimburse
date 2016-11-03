@@ -357,6 +357,8 @@ angular.module('starter.services')
         var index = this.travelDates.indexOf(d);
         if (index >-1) {
             this.travelDates.splice(index,1);
+            //added to make sure trip is persisted after update from delete
+            this.save();
         } else {
             $log.log('travelDate not found in trip object');
         }
@@ -419,6 +421,8 @@ angular.module('starter.services')
 			_deleteAttachment.then(function(rev) {
 				this.receiptRev = rev;
 				this.receipts.splice(index,1);
+				//added to make sure trip is persisted after update from delete
+				this.save();
 			});
         } else {
             $log.log('receipt not found in trip object');
@@ -443,6 +447,8 @@ angular.module('starter.services')
         var index = this.notes.indexOf(n);
         if (index >-1) {
             this.notes.splice(index,1);
+            //added to make sure trip is persisted after update from delete
+            this.save();
         } else {
             $log.log('note not found in trip object');
         }
