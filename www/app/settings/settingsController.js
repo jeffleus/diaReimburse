@@ -1,7 +1,8 @@
 angular.module('starter.controllers')
 
-.controller('SettingsCtrl', function($scope, SettingsSvc) {
+.controller('SettingsCtrl', function($scope, $log, SettingsSvc) {
     var self = this;
+    $scope.vm = {};
     $scope.settingsSvc = SettingsSvc;
     
     $scope.$on('$ionicView.enter', function() { 
@@ -10,14 +11,21 @@ angular.module('starter.controllers')
     $scope.$on('$ionicView.leave', function() { 
         _save(); 
     });    
-    
+	    
     function _init() {
-        console.log('SettingsCtrl_init()');
+        $log.log('SettingsCtrl_init()');
     };
     
     function _save() {
-        console.log('SettingsCtrl_save()');    
-        SettingsSvc.pause();
+        var isDirty = $scope.vm.settingsForm.$dirty;
+        if (isDirty) { 
+            $log.log('SettingsCtrl_save()');    
+            SettingsSvc.pause()
+                .then(function(isSaved) {
+                    //reset the form to pristine after a successful save
+                    $scope.vm.settingsForm.$setPristine();
+                }); 
+        }
     }
 });
 
