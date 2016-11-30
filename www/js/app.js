@@ -50,16 +50,6 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.services', 'starter.co
     controller: 'AppCtrl'
   })
 
-  .state('app.search', {
-    url: "/search",
-    views: {
-      'menuContent': {
-        templateUrl: "templates/search.html",
-        controller: "SearchCtrl"
-      }
-    }
-  })
-
   .state('app.settings', {
     url: "/settings",
     views: {
@@ -79,17 +69,8 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.services', 'starter.co
       }
     }
   })
-
-//  .state('app.browse', {
-//    url: "/browse",
-//    views: {
-//      'menuContent': {
-//        templateUrl: "templates/browse.html",
-//        controller: "BrowseCtrl"
-//      }
-//    }
-//  })
-    .state('app.trips', {
+  
+  .state('app.trips', {
       url: "/trips",
       views: {
         'menuContent': {
@@ -97,7 +78,7 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.services', 'starter.co
           controller: 'TripCtrl'
         }
       }
-    })
+  })
 // 
 // PROSPECT - routes for the abstract, detail, transcripts, tests, and contacts
 // 
@@ -171,5 +152,4 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.services', 'starter.co
   ;
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/app/trips');
-})
-;
+});
