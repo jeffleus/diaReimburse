@@ -8,13 +8,15 @@ angular.module('starter.controllers')
     $scope.sendTrip = _sendTrip;
     $scope.gotoTrips = _gotoTrips;
     
-    $rootScope.$on('$stateChangeSuccess', function() {
-        var isDirty = $scope.vm.tripForm.$dirty;
-        if (isDirty) { 
-            _save().then(function(isSaved) {
-                //reset the form to pristine after a successful save
-                $scope.vm.tripForm.$setPristine();
-            }); 
+    $rootScope.$on('$stateChangeStart', function(e, toState, toParams, fromState, fromParams) {
+        if (fromState.name == 'app.single.home'){
+            var isDirty = $scope.vm.tripForm.$dirty;
+            if (isDirty) { 
+                _save().then(function(isSaved) {
+                    //reset the form to pristine after a successful save
+                    $scope.vm.tripForm.$setPristine();
+                }); 
+            }
         }
     });
     
