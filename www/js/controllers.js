@@ -128,28 +128,4 @@ angular.module('starter.controllers', ['ngCookies', 'ionic-timepicker'])
     $scope.gotoTrips = function() {
         $state.go('app.trips');
     };
-})
-
-.controller('NotesCtrl', function($scope, $timeout, $ionicActionSheet) {
-})
-
-.controller('SearchCtrl', function($scope, $timeout, $ionicActionSheet) {
-    $scope.items = [
-        { title: 'testing' },
-        { title: 'testing' },
-        { title: 'anohter' },
-        { title: 'testing' },
-        { title: 'still' },
-        { title: 'testing' },
-        { title: 'testing' },
-        { title: 'testing' },
-        { title: 'some' },
-        { title: 'testing' },
-        { title: 'info' },
-        { title: 'testing' },
-        { title: 'trying' },
-        { title: 'and looking' },
-        { title: 'testing' }
-    ];
-})
-;
+});
