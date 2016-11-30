@@ -316,9 +316,18 @@ angular.module('starter.services')
     
 	function _save() {
         var self = this;
+        var images = [];
+        self.receipts.forEach(function(r){
+            images.push(r.imageUrl);
+            delete r.imageUrl;
+        })
 		return Pouch.db.put(self).then(function(result) {
 			$log.info('Trip.saved: ' + self._rev + ' --> ' + result);
             self._rev = result.rev;
+            self.receipts.forEach(function(r){
+                r.imageUrl = images[0];
+                image.shift();
+            });
 		});
 	}
 	
