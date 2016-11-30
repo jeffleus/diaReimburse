@@ -8,7 +8,8 @@ angular.module('starter.controllers')
     $scope.$on('$ionicView.enter', function() { 
         _init(); 
     });
-    $scope.$on('$ionicView.leave', function() { 
+    $scope.$on('$ionicView.leave', function() {
+        $log.log('SettingsCtrl_$ionicView.leave: save settings to svc');
         _save(); 
     });    
 	    
@@ -17,14 +18,20 @@ angular.module('starter.controllers')
     };
     
     function _save() {
+        //check the ngForm to see if settings are dirty
         var isDirty = $scope.vm.settingsForm.$dirty;
         if (isDirty) { 
+            //log the save event and use the service to save changes
             $log.log('SettingsCtrl_save()');    
             SettingsSvc.pause()
                 .then(function(isSaved) {
                     //reset the form to pristine after a successful save
                     $scope.vm.settingsForm.$setPristine();
-                }); 
+                    $log.log('SettingsSvc: saved changes to settings.');
+                })
+                .error(function(err) {
+                    $log.error(err);
+                });
         }
     }
 });

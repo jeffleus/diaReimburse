@@ -18,29 +18,11 @@ angular.module('starter.services')
     _init();
     function _init() {
         console.log('SettingsCtrl_init()');
-//        self.firstName = "";
-//        self.lastName = "";
-//        self.email = "";
-//        self.department = "";
-//        self.homeCity = "";
-//        self.defaultTitle = "";//self.firstName.substring(0,1) + self.lastName + ' Trip'
-//        self.defaultPurpose = "";
-
-//        if (localStorage['lastSaved']) {
-//            self.lastSaved = moment(localStorage['lastSaved']).toDate();
-//        }
-        
-//        _hydrateFromPouch();
         _resume();
     };
     
     function _resume() {
         _hydrateFromPouch();
-//        if (localStorage['settings']) {
-//            //parse the localStorage for settings and then extend the current service to overwrite data
-//            var settings = JSON.parse(localStorage['settings']);
-//            angular.extend(self, settings);                    
-//        }
     }
     
     //get allDocs and hydrate from results
